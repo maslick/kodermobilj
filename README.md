@@ -1,11 +1,10 @@
 # =kodermobilj=
-Android native client for barkoder
+Android native client for [barkoder](https://github.com/maslick/barkoder)
 
 ## Features
-* Scans a barcode and push it to a ``barkoder`` hosted backend
-* Written in Kotlin
-* Using OkHttp3, Retrofit2, RxJava2, Koin v1
-* MVP architecture
+* Scans the product barcode and pushes it to a ``barkoder`` hosted backend
+* MVP architecture (Kotlin + Koin)
+* Using OkHttp v3, Retrofit v2, RxJava v2, Koin v1
 
 
 ## Usage
