@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.support.design.widget.Snackbar
 import android.view.View
-import io.maslick.kodermobile.di.KeycloakToken
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -34,13 +33,6 @@ object AsyncHelper {
 }
 
 object Helper {
-    fun isTokenExpired(token: KeycloakToken?): Boolean {
-        token?.apply {
-            return this.expirationDate != null && Calendar.getInstance().after(this.expirationDate)
-        }
-        return true
-    }
-
     @SuppressLint("SimpleDateFormat")
     fun Calendar.formatDate(): String {
         val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
