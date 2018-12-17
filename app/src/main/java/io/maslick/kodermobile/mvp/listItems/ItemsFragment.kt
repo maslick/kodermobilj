@@ -10,10 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import com.kennyc.bottomsheet.BottomSheet
 import com.kennyc.bottomsheet.BottomSheetListener
@@ -46,6 +43,15 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         presenter.result(requestCode, resultCode)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
+        inflater.inflate(R.menu.items_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) { R.id.addNewItem -> presenter.addNewItem() }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val root = inflater.inflate(R.layout.items_frag, container, false)
 
@@ -65,6 +71,8 @@ class ItemsFragment : Fragment(), ItemsContract.View {
                 setOnClickListener { presenter.addNewItem() }
             }
         }
+
+        setHasOptionsMenu(true)
         return root
     }
 

@@ -61,7 +61,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.options_scan, menu)
+        inflater?.inflate(R.menu.item_fragment_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
