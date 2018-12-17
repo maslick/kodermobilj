@@ -32,10 +32,6 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
             })
     }
 
-    override fun stop() {
-        // TODO
-    }
-
     override fun result(requestCode: Int, resultCode: Int) {
         if (AddEditItemActivity.REQUEST_ADD_ITEM == requestCode && Activity.RESULT_OK == resultCode)
             view.showSuccessfullySavedItem()
@@ -46,11 +42,7 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
     }
 
     override fun openItemDetail(item: Item) {
-        view.showItem(item)
-    }
-
-    override fun editItem(item: Item) {
-        // TODO
+        view.showItemDetailUi(item)
     }
 
     override fun removeItem(item: Item) {

@@ -32,20 +32,14 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         get() = isAdded
 
     private val lineAdapter = LineAdapter(object : ItemListener {
-        override fun onShowItem(item: Item) { presenter.openItemDetail(item)}
-        override fun onEditItem(item: Item) { presenter.editItem(item)}
+        override fun onEditItem(item: Item) { presenter.openItemDetail(item)}
         override fun onDeleteItem(item: Item) { presenter.removeItem(item)}
     })
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         presenter.view = this
         presenter.start()
-    }
-
-    override fun onPause() {
-        presenter.stop()
-        super.onPause()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -117,14 +111,13 @@ class ItemsFragment : Fragment(), ItemsContract.View {
             title.text = item.title
             description.text = item.description
             code.text = item.barcode
-            itemView.setOnClickListener { callbacks.onShowItem(item) }
+            itemView.setOnClickListener { callbacks.onEditItem(item) }
             itemView.setOnLongClickListener {
                 BottomSheet.Builder(itemView.context)
                     .setSheet(R.menu.dropup_menu)
                     .setListener(object : BottomSheetListener {
                         override fun onSheetItemSelected(sheet: BottomSheet, menuItem: MenuItem, obj: Any?) {
                             when (menuItem.title) {
-                                "Show" -> callbacks.onShowItem(item)
                                 "Edit" -> callbacks.onEditItem(item)
                                 "Remove" -> callbacks.onDeleteItem(item)
                             }
@@ -144,7 +137,7 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
     }
 
-    override fun showItem(item: Item) {
+    override fun showItemDetailUi(item: Item) {
         val intent = Intent(context, AddEditItemActivity::class.java)
         setProperty(EDIT_ITEM_ID, item)
         startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
@@ -156,17 +149,12 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         }
     }
 
-    override fun showItemDetailUi(item: Item) {
-        // TODO
-    }
-
     override fun showSuccessfullySavedItem() {
         view?.showSnackBar("Item saved", Snackbar.LENGTH_LONG)
         presenter.loadItems()
     }
 
     interface ItemListener {
-        fun onShowItem(item: Item)
         fun onEditItem(item: Item)
         fun onDeleteItem(item: Item)
     }

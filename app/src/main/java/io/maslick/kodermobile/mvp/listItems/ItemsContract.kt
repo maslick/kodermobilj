@@ -10,20 +10,17 @@ interface ItemsContract {
         fun setLoadingIndicator(active: Boolean)
         fun showItems(items: List<Item>)
         fun showAddItem()
-        fun showItemDetailUi(item: Item)
         fun showSuccessfullySavedItem()
         fun showLoadingItemsError()
         fun showNoItems()
-        fun showItem(item: Item)
+        fun showItemDetailUi(item: Item)
     }
 
     interface Presenter : BasePresenter<View> {
-        fun stop()
         fun result(requestCode: Int, resultCode: Int)
         fun loadItems()
         fun addNewItem()
         fun openItemDetail(item: Item)
-        fun editItem(item: Item)
         fun removeItem(item: Item)
     }
 }
