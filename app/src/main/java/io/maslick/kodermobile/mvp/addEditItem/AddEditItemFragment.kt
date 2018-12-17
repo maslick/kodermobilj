@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.*
+import android.widget.NumberPicker
 import android.widget.TextView
 import com.google.zxing.integration.android.IntentIntegrator
 import io.maslick.kodermobile.R
@@ -27,7 +28,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     private lateinit var category: TextView
     private lateinit var description: TextView
     private lateinit var barcode: TextView
-    private lateinit var quantity: TextView
+    private lateinit var quantity: NumberPicker
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.additem_frag, container, false)
@@ -39,14 +40,19 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
             barcode = findViewById(R.id.editBarcodeFragment)
             quantity = findViewById(R.id.editQuantityFragment)
 
+            with(quantity) {
+                minValue = 0
+                maxValue = 200
+                setFormatter { "$it pcs." }
+                wrapSelectorWheel = true
+            }
+
             activity!!.findViewById<FloatingActionButton>(R.id.fab_save_item).setOnClickListener {
                 val titleStr = title.text.toString()
                 val categoryStr = category.text.toString()
                 val descStr = description.text.toString()
                 val barcodeStr = barcode.text.toString()
-                var num: Int? = null
-                try { num = quantity.text.toString().toInt() } catch (e: Exception){}
-                presenter.saveItem(Item(null, titleStr, categoryStr, descStr, barcodeStr, num))
+                presenter.saveItem(Item(null, titleStr, categoryStr, descStr, barcodeStr, quantity.value))
             }
         }
 
@@ -88,7 +94,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     override fun populateItem(item: Item) {
         title.text = item.title
         barcode.text = item.barcode
-        quantity.text = item.quantity.toString()
+        quantity.value = item.quantity ?: 0
         category.text = item.category
         description.text = item.description
         presenter.loadData = false
