@@ -19,9 +19,11 @@ import com.kennyc.bottomsheet.BottomSheet
 import com.kennyc.bottomsheet.BottomSheetListener
 import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Item
+import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.Helper.showSnackBar
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
 import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.setProperty
 
 class ItemsFragment : Fragment(), ItemsContract.View {
 
@@ -115,6 +117,7 @@ class ItemsFragment : Fragment(), ItemsContract.View {
             title.text = item.title
             description.text = item.description
             code.text = item.barcode
+            itemView.setOnClickListener { callbacks.onShowItem(item) }
             itemView.setOnLongClickListener {
                 BottomSheet.Builder(itemView.context)
                     .setSheet(R.menu.dropup_menu)
@@ -137,6 +140,13 @@ class ItemsFragment : Fragment(), ItemsContract.View {
 
     override fun showAddItem() {
         val intent = Intent(context, AddEditItemActivity::class.java)
+        setProperty(EDIT_ITEM_ID, -1)
+        startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
+    }
+
+    override fun showItem(id: Int) {
+        val intent = Intent(context, AddEditItemActivity::class.java)
+        setProperty(EDIT_ITEM_ID, id)
         startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
     }
 

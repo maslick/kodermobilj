@@ -5,7 +5,7 @@ import io.maslick.kodermobile.di.Item
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class AddEditItemPresenter(val barkoderApi: IBarkoderApi) : AddEditItemContract.Presenter {
+class AddEditItemPresenter(private val itemId: Int, val barkoderApi: IBarkoderApi) : AddEditItemContract.Presenter {
     override lateinit var view: AddEditItemContract.View
 
     override fun start() {}
