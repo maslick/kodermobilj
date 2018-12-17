@@ -154,6 +154,14 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         presenter.loadItems()
     }
 
+    override fun showDeleteOk(message: String) {
+        view?.showSnackBar(message, Snackbar.LENGTH_LONG)
+    }
+
+    override fun showErrorDeletingItem() {
+        view?.showSnackBar("Could not delete item", Snackbar.LENGTH_LONG)
+    }
+
     interface ItemListener {
         fun onEditItem(item: Item)
         fun onDeleteItem(item: Item)

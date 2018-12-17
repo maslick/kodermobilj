@@ -45,7 +45,14 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
         view.showItemDetailUi(item)
     }
 
+    @SuppressLint("CheckResult")
     override fun removeItem(item: Item) {
-        // TODO
+        barkoderApi.deleteItemWithId(item.id!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe( {
+                view.showDeleteOk("Item ${item.id} deleted")
+                loadItems()
+            }, { view.showErrorDeletingItem() } )
     }
 }
