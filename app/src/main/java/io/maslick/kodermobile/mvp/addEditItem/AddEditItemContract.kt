@@ -7,6 +7,7 @@ import io.maslick.kodermobile.mvp.BaseView
 interface AddEditItemContract {
     interface View : BaseView<Presenter> {
         fun showItems()
+        fun populateItem(item: Item)
         fun showBarcodeValidationError()
         fun showQuantityValidationError()
         fun showSaveItemError()

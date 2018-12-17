@@ -85,6 +85,14 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
         barcode.text = code
     }
 
+    override fun populateItem(item: Item) {
+        title.text = item.title
+        barcode.text = item.barcode
+        quantity.text = item.quantity.toString()
+        category.text = item.category
+        description.text = item.description
+    }
+
     override fun showItems() {
         with(activity!!) {
             setResult(Activity.RESULT_OK)

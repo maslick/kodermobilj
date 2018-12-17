@@ -14,7 +14,7 @@ interface ItemsContract {
         fun showSuccessfullySavedItem()
         fun showLoadingItemsError()
         fun showNoItems()
-        fun showItem(id: Int)
+        fun showItem(item: Item)
     }
 
     interface Presenter : BasePresenter<View> {

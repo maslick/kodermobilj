@@ -140,13 +140,13 @@ class ItemsFragment : Fragment(), ItemsContract.View {
 
     override fun showAddItem() {
         val intent = Intent(context, AddEditItemActivity::class.java)
-        setProperty(EDIT_ITEM_ID, -1)
+        setProperty(EDIT_ITEM_ID, Item())
         startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
     }
 
-    override fun showItem(id: Int) {
+    override fun showItem(item: Item) {
         val intent = Intent(context, AddEditItemActivity::class.java)
-        setProperty(EDIT_ITEM_ID, id)
+        setProperty(EDIT_ITEM_ID, item)
         startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
     }
 

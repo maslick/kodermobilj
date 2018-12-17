@@ -46,7 +46,7 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
     }
 
     override fun openItemDetail(item: Item) {
-        view.showItem(item.id!!)
+        view.showItem(item)
     }
 
     override fun editItem(item: Item) {
