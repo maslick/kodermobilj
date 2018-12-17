@@ -16,8 +16,10 @@ interface AddEditItemContract {
         fun showBarcode(code: String)
     }
     interface Presenter : BasePresenter<View> {
+        var loadData: Boolean
         fun saveItem(item: Item)
         fun scanCode()
         fun onNewBarcode(result: String?)
+        fun stop()
     }
 }

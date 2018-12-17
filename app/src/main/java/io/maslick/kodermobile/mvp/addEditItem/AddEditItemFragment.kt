@@ -91,6 +91,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
         quantity.text = item.quantity.toString()
         category.text = item.category
         description.text = item.description
+        presenter.loadData = false
     }
 
     override fun showItems() {

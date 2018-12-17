@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import io.maslick.kodermobile.Config.barkoderBaseDevUrl
 import io.maslick.kodermobile.Config.barkoderBaseProdUrl
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
+import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemFragment
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
@@ -28,7 +29,7 @@ val mvp = module {
     factory { ItemsPresenter(get("dev")) as ItemsContract.Presenter }
 
     factory { AddEditItemFragment() }
-    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get("dev")) as AddEditItemContract.Presenter }
+    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get("dev"), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
 }
 
 val sharedPrefsModule = module {
@@ -75,6 +76,7 @@ val barkoderApi = module {
 
 object Properties {
     const val EDIT_ITEM_ID = "EDIT_ITEM_ID"
+    const val LOAD_DATA = "EDIT_LOAD_DATA"
 }
 
 ///////////////////////////////////////////

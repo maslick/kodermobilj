@@ -2,14 +2,17 @@ package io.maslick.kodermobile.mvp.addEditItem
 
 import io.maslick.kodermobile.di.IBarkoderApi
 import io.maslick.kodermobile.di.Item
+import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.setProperty
 
-class AddEditItemPresenter(private val selectedItem: Item, private val barkoderApi: IBarkoderApi) : AddEditItemContract.Presenter {
+class AddEditItemPresenter(private val selectedItem: Item, private val barkoderApi: IBarkoderApi, override var loadData: Boolean) : AddEditItemContract.Presenter, KoinComponent {
     override lateinit var view: AddEditItemContract.View
 
     override fun start() {
-        selectedItem.id?.apply { view.populateItem(selectedItem) }
+        if (loadData && selectedItem.id != null) view.populateItem(selectedItem)
     }
 
     override fun saveItem(item: Item) {
@@ -37,5 +40,9 @@ class AddEditItemPresenter(private val selectedItem: Item, private val barkoderA
     override fun onNewBarcode(result: String?) {
         if (result == null) view.showScanCancelled()
         else view.showBarcode(result)
+    }
+
+    override fun stop() {
+        setProperty(LOAD_DATA, loadData)
     }
 }
