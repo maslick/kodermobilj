@@ -5,83 +5,103 @@
                                              xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <EditText
-            android:id="@+id/editTitleFragment"
-            android:hint="Enter title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:layout_marginTop="36dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:textSize="20pt"
-            android:textStyle="bold"
-            android:background="@null"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="1.0"/>
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+        <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+            <requestFocus />
 
-    <EditText
-            android:id="@+id/editBarcodeFragment"
-            android:hint="Enter barcode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:background="@null"
-            android:textSize="15pt"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTitleFragment"/>
+            <EditText
+                    android:id="@+id/editTitleFragment"
+                    android:hint="Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="20pt"
+                    android:textStyle="bold"
+                    android:background="@null"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-    <EditText
-            android:id="@+id/editCategoryFragment"
-            android:hint="Add category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@null"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editBarcodeFragment"/>
+            <EditText
+                    android:id="@+id/editBarcodeFragment"
+                    android:hint="Enter barcode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@null"
+                    android:textSize="15pt"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editTitleFragment"/>
 
-    <EditText
-            android:id="@+id/editDescriptionFragment"
-            android:hint="Add description"
-            android:layout_width="match_parent"
-            android:layout_height="26dp"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:singleLine="false"
-            android:background="@null"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editCategoryFragment"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <EditText
+                    android:id="@+id/editQuantityFragment"
+                    android:hint="Quantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:textSize="15pt"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@null"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editBarcodeFragment"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-    <EditText
-            android:id="@+id/editQuantityFragment"
-            android:hint="Quantity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@null"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editDescriptionFragment"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <EditText
+                    android:id="@+id/editCategoryFragment"
+                    android:hint="Add category (optional)"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:layout_marginTop="64dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@null"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editQuantityFragment" android:textStyle="bold"/>
+
+            <EditText
+                    android:id="@+id/editDescriptionFragment"
+                    android:hint="Add description (optional)"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:singleLine="false"
+                    android:background="@null"
+                    android:minLines="6"
+                    android:gravity="top|left"
+                    android:maxLines="8"
+                    android:scrollbars="vertical"
+                    android:textAlignment="inherit"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editCategoryFragment"
+                    app:layout_constraintEnd_toEndOf="parent" android:lines="6"/>
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+
+
+
 
 </android.support.constraint.ConstraintLayout>
