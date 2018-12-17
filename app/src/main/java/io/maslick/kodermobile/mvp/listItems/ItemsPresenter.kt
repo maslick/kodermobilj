@@ -12,8 +12,10 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
 
     override lateinit var view: ItemsContract.View
 
+    var dataFetched = false
+
     override fun start() {
-        loadItems()
+        if (!dataFetched) loadItems()
     }
 
     @SuppressLint("CheckResult")
@@ -24,6 +26,7 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ items ->
                 view.setLoadingIndicator(false)
+                dataFetched = !dataFetched
                 if (items.isEmpty()) view.showNoItems()
                 else view.showItems(items)
             }, {

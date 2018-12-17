@@ -8,7 +8,9 @@ import io.reactivex.schedulers.Schedulers
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.setProperty
 
-class AddEditItemPresenter(private val selectedItem: Item, private val barkoderApi: IBarkoderApi, override var loadData: Boolean) : AddEditItemContract.Presenter, KoinComponent {
+class AddEditItemPresenter(private val selectedItem: Item,
+                           private val barkoderApi: IBarkoderApi,
+                           override var loadData: Boolean) : AddEditItemContract.Presenter, KoinComponent {
     override lateinit var view: AddEditItemContract.View
 
     override fun start() {
