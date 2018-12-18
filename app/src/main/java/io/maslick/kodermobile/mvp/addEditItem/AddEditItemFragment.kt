@@ -12,6 +12,7 @@ import android.widget.TextView
 import com.google.zxing.integration.android.IntentIntegrator
 import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Item
+import io.maslick.kodermobile.helper.AndroidUtils
 import io.maslick.kodermobile.helper.Helper.showSnackBar
 import org.koin.android.ext.android.inject
 
@@ -29,6 +30,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     private lateinit var description: TextView
     private lateinit var barcode: TextView
     private lateinit var quantity: NumberPicker
+    private lateinit var progressOverlay: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.additem_frag, container, false)
@@ -39,6 +41,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
             description = findViewById(R.id.editDescriptionFragment)
             barcode = findViewById(R.id.editBarcodeFragment)
             quantity = findViewById(R.id.editQuantityFragment)
+            progressOverlay = findViewById(R.id.progress_overlay)
 
             with(quantity) {
                 minValue = 0
@@ -111,12 +114,20 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
         view?.showSnackBar("Barcode cannot be empty", Snackbar.LENGTH_LONG)
     }
 
-    override fun showQuantityValidationError() {
-        view?.showSnackBar("Quantity cannot be empty", Snackbar.LENGTH_LONG)
+    override fun showTitleValidationError() {
+        view?.showSnackBar("Title cannot be empty", Snackbar.LENGTH_LONG)
     }
 
     override fun showSaveItemError() {
         view?.showSnackBar("Error while saving item", Snackbar.LENGTH_LONG)
+    }
+
+    override fun startLoadingIndicator() {
+        AndroidUtils.animateView(progressOverlay, View.VISIBLE, 1f, 200)
+    }
+
+    override fun stopLoadingIndicator() {
+        AndroidUtils.animateView(progressOverlay, View.GONE, 0f, 200)
     }
 }
 

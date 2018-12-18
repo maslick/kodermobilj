@@ -18,21 +18,35 @@ class AddEditItemPresenter(private val selectedItem: Item,
     }
 
     override fun saveItem(item: Item) {
-        if (item.barcode.isNullOrEmpty()) view.showBarcodeValidationError()
-        else if (item.quantity == null) view.showQuantityValidationError()
-        else
+        if (item.title.isNullOrBlank()) view.showTitleValidationError()
+        else if (item.barcode.isNullOrBlank()) view.showBarcodeValidationError()
+        else {
+            view.startLoadingIndicator()
             if (selectedItem.id == null)
                 barkoderApi.postItem(item)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ view.showItems() }, { view.showSaveItemError() })
+                    .subscribe({
+                        view.stopLoadingIndicator()
+                        view.showItems()
+                    }, {
+                        view.stopLoadingIndicator()
+                        view.showSaveItemError()
+                    })
             else {
                 item.id = selectedItem.id
                 barkoderApi.editItem(item)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ view.showItems() }, { view.showSaveItemError() })
+                    .subscribe({
+                        view.stopLoadingIndicator()
+                        view.showItems()
+                    }, {
+                        view.stopLoadingIndicator()
+                        view.showSaveItemError()
+                    })
             }
+        }
     }
 
     override fun scanCode() {
