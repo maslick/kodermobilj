@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".mvp.addEditItem.AddEditItemActivity"/>
+        <activity android:name=".mvp.addEditItem.AddEditItemActivity" android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity android:name="com.journeyapps.barcodescanner.CaptureActivity" android:screenOrientation="portrait" tools:replace="screenOrientation"/>
     </application>
 

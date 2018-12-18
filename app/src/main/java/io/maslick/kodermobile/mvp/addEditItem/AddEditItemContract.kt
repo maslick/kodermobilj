@@ -9,11 +9,13 @@ interface AddEditItemContract {
         fun showItems()
         fun populateItem(item: Item)
         fun showBarcodeValidationError()
-        fun showQuantityValidationError()
+        fun showTitleValidationError()
         fun showSaveItemError()
         fun initiateCodeScan()
         fun showScanCancelled()
         fun showBarcode(code: String)
+        fun startLoadingIndicator()
+        fun stopLoadingIndicator()
     }
     interface Presenter : BasePresenter<View> {
         var loadData: Boolean
