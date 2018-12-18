@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import io.maslick.kodermobile.di.IBarkoderApi
 import io.maslick.kodermobile.di.Item
+import io.maslick.kodermobile.di.Status
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -53,9 +54,11 @@ class ItemsPresenter(val barkoderApi: IBarkoderApi) : ItemsContract.Presenter {
         barkoderApi.deleteItemWithId(item.id!!)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe( {
-                view.showDeleteOk("Item ${item.id} deleted")
-                loadItems()
+            .subscribe({
+                if (it.status == Status.OK) {
+                    view.showDeleteOk("Item ${item.id} deleted")
+                    loadItems()
+                } else view.showErrorDeletingItem()
             }, { view.showErrorDeletingItem() } )
     }
 }

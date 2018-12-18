@@ -3,6 +3,7 @@ package io.maslick.kodermobile.mvp.addEditItem
 import io.maslick.kodermobile.di.IBarkoderApi
 import io.maslick.kodermobile.di.Item
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
+import io.maslick.kodermobile.di.Status
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.koin.standalone.KoinComponent
@@ -28,7 +29,8 @@ class AddEditItemPresenter(private val selectedItem: Item,
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         view.stopLoadingIndicator()
-                        view.showItems()
+                        if (it.status == Status.OK) view.showItems()
+                        else view.showSaveItemError()
                     }, {
                         view.stopLoadingIndicator()
                         view.showSaveItemError()
@@ -40,7 +42,8 @@ class AddEditItemPresenter(private val selectedItem: Item,
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         view.stopLoadingIndicator()
-                        view.showItems()
+                        if (it.status == Status.OK) view.showItems()
+                        else view.showSaveItemError()
                     }, {
                         view.stopLoadingIndicator()
                         view.showSaveItemError()
