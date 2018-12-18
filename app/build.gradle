@@ -12,7 +12,7 @@ android {
         release {
             keyAlias keystoreProperties['keyAlias'] ?: System.getenv("keyAlias")
             keyPassword keystoreProperties['keyPassword'] ?: System.getenv("keyPassword")
-            storeFile file(keystoreProperties['storeFile']) ?: "../keystore.jks"
+            storeFile file(keystoreProperties['storeFile'] ?: "../keystore.jks")
             storePassword keystoreProperties['storePassword'] ?: System.getenv("storePassword")
         }
     }
