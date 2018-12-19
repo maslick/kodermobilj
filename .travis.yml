@@ -34,5 +34,11 @@ before_install:
 script:
     - ./gradlew build
 
+deploy:
+  provider: script
+  script: ./gradlew build bintrayUpload -x test
+  skip_cleanup: true
+  dry-run: false
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)

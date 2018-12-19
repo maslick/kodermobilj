@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'jacoco'
+apply plugin: 'com.jfrog.bintray'
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -133,3 +134,35 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
 }
 
 check.dependsOn jacocoTestReport
+
+ext{
+    bintrayUser = System.getenv('BINTRAY_USER')
+    bintrayKey = System.getenv('BINTRAY_KEY')
+    buildNumber = System.getenv('TRAVIS_BUILD_NUMBER') ?: "1"
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    buildNumber = buildNumber
+
+    filesSpec {
+        from 'build/outputs/release'
+        into 'kodermobile'
+    }
+
+    pkg {
+        repo = 'generic'
+        name = 'koder-mobilj'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/maslick/kodermobilj.git'
+        version {
+            name = project.name + "_" + buildNumber
+            desc = "build ${buildNumber}"
+            released = new Date()
+        }
+    }
+
+    publish = true
+    override = true
+}
