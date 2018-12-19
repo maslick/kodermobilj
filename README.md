@@ -5,7 +5,7 @@ Android native client for [barkoder](https://github.com/maslick/barkoder)
 [![codecov](https://codecov.io/gh/maslick/kodermobilj/branch/master/graph/badge.svg)](https://codecov.io/gh/maslick/kodermobilj)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-![barkoder mobile](presentation.png)
+![barkoder mobile](presentation.jpg)
 
 ## Features
 * Scans the product barcode and pushes it to a ``barkoder`` hosted backend
