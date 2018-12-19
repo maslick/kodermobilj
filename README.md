@@ -1,6 +1,10 @@
 # =kodermobilj=
 Android native client for [barkoder](https://github.com/maslick/barkoder)
 
+[![Build Status](https://travis-ci.org/maslick/kodermobilj.svg?branch=master)](https://travis-ci.org/maslick/kodermobilj)
+
+
+
 ## Features
 * Scans the product barcode and pushes it to a ``barkoder`` hosted backend
 * Simple CRUD operations
