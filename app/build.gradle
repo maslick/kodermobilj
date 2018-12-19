@@ -147,8 +147,8 @@ bintray {
     buildNumber = buildNumber
 
     filesSpec {
-        from 'build/outputs/release'
-        into 'kodermobile'
+        from ('build/outputs/apk/') { include '*.apk' }
+        into '/'
     }
 
     pkg {
