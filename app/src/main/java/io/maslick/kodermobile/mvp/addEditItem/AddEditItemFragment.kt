@@ -7,8 +7,8 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.*
+import android.widget.EditText
 import android.widget.NumberPicker
-import android.widget.TextView
 import com.google.zxing.integration.android.IntentIntegrator
 import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Item
@@ -25,10 +25,10 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
         presenter.start()
     }
 
-    private lateinit var title: TextView
-    private lateinit var category: TextView
-    private lateinit var description: TextView
-    private lateinit var barcode: TextView
+    private lateinit var title: EditText
+    private lateinit var category: EditText
+    private lateinit var description: EditText
+    private lateinit var barcode: EditText
     private lateinit var quantity: NumberPicker
     private lateinit var progressOverlay: View
 
@@ -91,15 +91,15 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     }
 
     override fun showBarcode(code: String) {
-        barcode.text = code
+        barcode.setText(code)
     }
 
     override fun populateItem(item: Item) {
-        title.text = item.title
-        barcode.text = item.barcode
+        title.setText(item.title)
+        barcode.setText(item.barcode)
         quantity.value = item.quantity ?: 0
-        category.text = item.category
-        description.text = item.description
+        category.setText(item.category)
+        description.setText(item.description)
         presenter.loadData = false
     }
 
