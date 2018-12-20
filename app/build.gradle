@@ -140,6 +140,7 @@ ext{
     bintrayKey = System.getenv('BINTRAY_KEY') ?: System.getProperty("BINTRAY_KEY")
     buildNumber = System.getenv('TRAVIS_BUILD_NUMBER') ?: "0"
     date = new Date().format("yyyy-MM-dd_HH-mm-ss")
+    appName = "kodermobile"
 }
 
 bintray {
@@ -148,15 +149,16 @@ bintray {
     buildNumber = buildNumber
 
     filesSpec {
-        into("$date")
         from('build/outputs/apk/debug') { include '*.apk' }
-        into("$date")
+        into("$appName/$date")
         from('build/outputs/apk/release') { include '*.apk' }
+        into("$appName/$date")
+        rename { name -> name.replace 'app', appName }
     }
 
     pkg {
         repo = 'generic'
-        name = 'koder-mobile'
+        name = appName
         userOrg = 'maslick'
         desc = 'barkoder Android native app'
         licenses = ['MIT']
