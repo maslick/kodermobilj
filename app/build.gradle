@@ -136,9 +136,10 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
 check.dependsOn jacocoTestReport
 
 ext{
-    bintrayUser = System.getenv('BINTRAY_USER')
-    bintrayKey = System.getenv('BINTRAY_KEY')
-    buildNumber = System.getenv('TRAVIS_BUILD_NUMBER') ?: "1"
+    bintrayUser = System.getenv('BINTRAY_USER') ?: System.getProperty("BINTRAY_USER")
+    bintrayKey = System.getenv('BINTRAY_KEY') ?: System.getProperty("BINTRAY_KEY")
+    buildNumber = System.getenv('TRAVIS_BUILD_NUMBER') ?: "0"
+    date = new Date().format("yyyy-MM-dd_HH-mm-ss")
 }
 
 bintray {
@@ -147,18 +148,22 @@ bintray {
     buildNumber = buildNumber
 
     filesSpec {
-        from ('build/outputs/apk/') { include '*.apk' }
-        into '/'
+        into("$date")
+        from('build/outputs/apk/debug') { include '*.apk' }
+        into("$date")
+        from('build/outputs/apk/release') { include '*.apk' }
     }
 
     pkg {
         repo = 'generic'
-        name = 'koder-mobilj'
+        name = 'koder-mobile'
+        userOrg = 'maslick'
+        desc = 'barkoder Android native app'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/maslick/kodermobilj.git'
         version {
-            name = project.name + "_" + buildNumber
-            desc = "build ${buildNumber}"
+            name = "build_$buildNumber"
+            desc = "build $buildNumber"
             released = new Date()
         }
     }
