@@ -31,6 +31,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     private lateinit var barcode: EditText
     private lateinit var quantity: NumberPicker
     private lateinit var progressOverlay: View
+    private lateinit var contents: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.additem_frag, container, false)
@@ -42,10 +43,11 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
             barcode = findViewById(R.id.editBarcodeFragment)
             quantity = findViewById(R.id.editQuantityFragment)
             progressOverlay = findViewById(R.id.progress_overlay)
+            contents = findViewById(R.id.addEditItemContents)
 
             with(quantity) {
                 minValue = 0
-                maxValue = 200
+                maxValue = 99
                 setFormatter { "$it pcs." }
                 wrapSelectorWheel = true
             }
@@ -123,10 +125,14 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     }
 
     override fun startLoadingIndicator() {
+        contents.alpha = 0.7f
+        contents.setOnTouchListener { _, _ ->  false }
         AndroidUtils.animateView(progressOverlay, View.VISIBLE, 1f, 200)
     }
 
     override fun stopLoadingIndicator() {
+        contents.alpha = 1.0f
+        contents.setOnTouchListener { v, event -> v.onTouchEvent(event) }
         AndroidUtils.animateView(progressOverlay, View.GONE, 0f, 200)
     }
 }
