@@ -56,17 +56,24 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         val root = inflater.inflate(R.layout.items_frag, container, false)
 
         with(root) {
+            val fabBtn = activity!!.findViewById<FloatingActionButton>(R.id.fab_add_item)
+
             findViewById<RecyclerView>(R.id.recyclerFragment).apply {
                 layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
                 adapter = lineAdapter
+                addOnScrollListener(object: RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                        if (dy > 0) fabBtn.hide() else fabBtn.show()
+                    }
+                })
             }
 
             findViewById<SwipeRefreshLayout>(R.id.swiper).apply {
                 setOnRefreshListener { presenter.loadItems() }
             }
 
-            activity!!.findViewById<FloatingActionButton>(R.id.fab_add_item).apply {
+            fabBtn.apply {
                 setImageResource(R.drawable.ic_add)
                 setOnClickListener { presenter.addNewItem() }
             }
