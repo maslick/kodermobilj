@@ -89,10 +89,7 @@ val barkoderApi = module {
     }
 }
 
-object Properties {
-    const val EDIT_ITEM_ID = "EDIT_ITEM_ID"
-    const val LOAD_DATA = "EDIT_LOAD_DATA"
-}
+val kodermobileModules = listOf(mvp, barkoderApi, cache)
 
 ///////////////////////////////////////////
 // Helper definitions
@@ -114,3 +111,8 @@ fun hasNetwork(context: Context): Boolean? {
 }
 
 fun prefs(context: Context) = context.getSharedPreferences("kodermobile", Context.MODE_PRIVATE)!!
+
+object Properties {
+    const val EDIT_ITEM_ID = "EDIT_ITEM_ID"
+    const val LOAD_DATA = "EDIT_LOAD_DATA"
+}
