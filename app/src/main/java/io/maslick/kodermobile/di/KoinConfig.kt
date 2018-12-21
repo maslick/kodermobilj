@@ -1,6 +1,8 @@
 package io.maslick.kodermobile.di
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.google.gson.GsonBuilder
 import io.maslick.kodermobile.Config.barkoderBaseDevUrl
 import io.maslick.kodermobile.Config.barkoderBaseProdUrl
@@ -12,7 +14,8 @@ import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsFragment
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
-import io.reactivex.Observable
+import io.maslick.kodermobile.rest.IBarkoderApi
+import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,7 +23,7 @@ import org.koin.dsl.module.module
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.*
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 
@@ -33,27 +36,39 @@ val mvp = module {
 }
 
 val sharedPrefsModule = module {
-    fun prefs(context: Context) = context.getSharedPreferences("barkoder", Context.MODE_PRIVATE)!!
     single { prefs(get()) }
 }
 
-val keycloakApi = module {
+val cache = module {
+    single { cache(get()) }
+    single("cacheInterceptor") {
+        Interceptor { chain ->
+            var request = chain.request()
+            request = if(hasNetwork(get())!!)
+                request.newBuilder().header("Cache-Control", "public, max-age=" + 15).build()
+            else
+                request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+            chain.proceed(request)
+        }
+    }
+}
+
+val barkoderApi = module {
     single { GsonBuilder().setLenient().create() }
-    single {
+    single("loggingInterceptor") {
         HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { mess -> println(mess) })
             .setLevel(HttpLoggingInterceptor.Level.BODY) as Interceptor
     }
     single {
         OkHttpClient()
             .newBuilder()
-            .addInterceptor(get())
+            .cache(get())
+            .addInterceptor(get("loggingInterceptor"))
+            .addInterceptor(get("cacheInterceptor"))
             .readTimeout(5, TimeUnit.SECONDS)
             .writeTimeout(5, TimeUnit.SECONDS)
             .build()
     }
-}
-
-val barkoderApi = module {
     single("dev") {
         Retrofit.Builder()
             .baseUrl(barkoderBaseDevUrl)
@@ -83,40 +98,19 @@ object Properties {
 // Helper definitions
 ///////////////////////////////////////////
 
-interface IBarkoderApi {
-    @GET("items")
-    fun getAllItems(@Header("Authorization") header: String = ""): Observable<List<Item>>
-
-    @GET("item/{id}")
-    fun getItemWithId(@Path("id") id: Int, @Header("Authorization") header: String = ""): Observable<Item>
-
-    @GET("barcode/{barcode}")
-    fun getItemWithBarcode(@Path("barcode") barcode: String, @Header("Authorization") header: String = ""): Observable<Item>
-
-    @POST("item")
-    fun postItem(@Body item: Item, @Header("Authorization") header: String = ""): Observable<Response>
-
-    @POST("items")
-    fun postItems(@Body items: List<Item>, @Header("Authorization") header: String = ""): Observable<Response>
-
-    @PUT("item")
-    fun editItem(@Body item: Item, @Header("Authorization") header: String = ""): Observable<Response>
-
-    @DELETE("item/{id}")
-    fun deleteItemWithId(@Path("id") id: Int, @Header("Authorization") header: String = ""): Observable<Response>
-
-    @DELETE("barcode/{barcode}")
-    fun deleteItemWithBarcode(@Path("barcode") barcode: String, @Header("Authorization") header: String = ""): Observable<Response>
+fun cache(context: Context): Cache {
+    val file = File(context.cacheDir, "httpCache")
+    file.mkdirs()
+    return Cache(file, 5*1000*1000)
 }
 
-data class Item(
-    var id: Int? = null,
-    var title: String? = null,
-    var category: String? = null,
-    var description: String? = null,
-    var barcode: String? = null,
-    var quantity: Int? = null
-)
+fun hasNetwork(context: Context): Boolean? {
+    var isConnected: Boolean? = false // Initial Value
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+    if (activeNetwork != null && activeNetwork.isConnected)
+        isConnected = true
+    return isConnected
+}
 
-enum class Status { ERROR, OK }
-data class Response(val status: Status, val errorMessage: String? = null)
+fun prefs(context: Context) = context.getSharedPreferences("kodermobile", Context.MODE_PRIVATE)!!
