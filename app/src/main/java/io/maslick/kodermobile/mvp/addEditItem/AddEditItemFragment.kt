@@ -11,9 +11,9 @@ import android.widget.EditText
 import android.widget.NumberPicker
 import com.google.zxing.integration.android.IntentIntegrator
 import io.maslick.kodermobile.R
-import io.maslick.kodermobile.di.Item
 import io.maslick.kodermobile.helper.AndroidUtils
 import io.maslick.kodermobile.helper.Helper.showSnackBar
+import io.maslick.kodermobile.rest.Item
 import org.koin.android.ext.android.inject
 
 class AddEditItemFragment : Fragment(), AddEditItemContract.View {

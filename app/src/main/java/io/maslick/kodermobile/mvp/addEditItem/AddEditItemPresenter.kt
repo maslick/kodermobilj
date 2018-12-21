@@ -1,9 +1,9 @@
 package io.maslick.kodermobile.mvp.addEditItem
 
-import io.maslick.kodermobile.di.IBarkoderApi
-import io.maslick.kodermobile.di.Item
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
-import io.maslick.kodermobile.di.Status
+import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.Item
+import io.maslick.kodermobile.rest.Status
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.koin.standalone.KoinComponent

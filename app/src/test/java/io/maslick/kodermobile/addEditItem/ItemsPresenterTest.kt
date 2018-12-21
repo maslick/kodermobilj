@@ -1,14 +1,14 @@
 package io.maslick.kodermobile.addEditItem
 
-import io.maslick.kodermobile.di.IBarkoderApi
-import io.maslick.kodermobile.di.Item
-import io.maslick.kodermobile.di.Response
-import io.maslick.kodermobile.di.Status.ERROR
-import io.maslick.kodermobile.di.Status.OK
 import io.maslick.kodermobile.helpers.RxSchedulersOverrideRule
 import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
+import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.Item
+import io.maslick.kodermobile.rest.Response
+import io.maslick.kodermobile.rest.Status.ERROR
+import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Rule

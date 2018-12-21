@@ -1,8 +1,8 @@
 package io.maslick.kodermobile
 
 import com.google.gson.GsonBuilder
-import io.maslick.kodermobile.di.IBarkoderApi
-import io.maslick.kodermobile.di.Item
+import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.Item
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.junit.BeforeClass

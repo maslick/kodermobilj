@@ -1,8 +1,8 @@
 package io.maslick.kodermobile.mvp.addEditItem
 
-import io.maslick.kodermobile.di.Item
 import io.maslick.kodermobile.mvp.BasePresenter
 import io.maslick.kodermobile.mvp.BaseView
+import io.maslick.kodermobile.rest.Item
 
 interface AddEditItemContract {
     interface View : BaseView<Presenter> {

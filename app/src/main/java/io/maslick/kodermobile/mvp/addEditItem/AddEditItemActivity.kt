@@ -3,10 +3,10 @@ package io.maslick.kodermobile.mvp.addEditItem
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import io.maslick.kodermobile.R
-import io.maslick.kodermobile.di.Item
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.replaceFragmentInActivity
 import io.maslick.kodermobile.helper.setupActionBar
+import io.maslick.kodermobile.rest.Item
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.property
 import org.koin.android.ext.android.setProperty

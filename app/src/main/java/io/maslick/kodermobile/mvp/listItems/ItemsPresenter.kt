@@ -2,10 +2,10 @@ package io.maslick.kodermobile.mvp.listItems
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import io.maslick.kodermobile.di.IBarkoderApi
-import io.maslick.kodermobile.di.Item
-import io.maslick.kodermobile.di.Status
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
+import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.Item
+import io.maslick.kodermobile.rest.Status
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 

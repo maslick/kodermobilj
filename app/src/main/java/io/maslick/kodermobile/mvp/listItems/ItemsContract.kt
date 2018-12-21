@@ -1,8 +1,8 @@
 package io.maslick.kodermobile.mvp.listItems
 
-import io.maslick.kodermobile.di.Item
 import io.maslick.kodermobile.mvp.BasePresenter
 import io.maslick.kodermobile.mvp.BaseView
+import io.maslick.kodermobile.rest.Item
 
 interface ItemsContract {
     interface View : BaseView<Presenter> {
