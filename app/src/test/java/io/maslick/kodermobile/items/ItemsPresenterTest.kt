@@ -1,15 +1,16 @@
 package io.maslick.kodermobile.items
 
-import io.maslick.kodermobile.di.IBarkoderApi
-import io.maslick.kodermobile.di.Item
-import io.maslick.kodermobile.di.Response
-import io.maslick.kodermobile.di.Status
 import io.maslick.kodermobile.helpers.RxSchedulersOverrideRule
 import io.maslick.kodermobile.helpers.argumentCaptor
 import io.maslick.kodermobile.helpers.capture
 import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
+import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.Item
+import io.maslick.kodermobile.rest.Response
+import io.maslick.kodermobile.rest.Status.ERROR
+import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Before
@@ -77,7 +78,7 @@ class ItemsPresenterTest {
     @Test
     fun clickDeleteItem() {
         kogda(barkoderApi.deleteItemWithId(items[0].id!!))
-            .thenReturn(Observable.just(Response(Status.OK, null)))
+            .thenReturn(Observable.just(Response(OK, null)))
 
         itemsPresenter.removeItem(items[0])
         verify(barkoderApi).deleteItemWithId(items[0].id!!)
@@ -87,7 +88,7 @@ class ItemsPresenterTest {
     @Test
     fun clickDeleteItemError() {
         kogda(barkoderApi.deleteItemWithId(items[1].id!!))
-            .thenReturn(Observable.just(Response(Status.ERROR, "Error deleting item!")))
+            .thenReturn(Observable.just(Response(ERROR, "Error deleting item!")))
 
         itemsPresenter.removeItem(items[1])
         verify(barkoderApi).deleteItemWithId(items[1].id!!)
