@@ -12,12 +12,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import com.kennyc.bottomsheet.BottomSheet
 import com.kennyc.bottomsheet.BottomSheetListener
 import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.Helper.showSnackBar
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
+import io.maslick.kodermobile.oauth.LoginActivity
 import io.maslick.kodermobile.rest.Item
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.setProperty
@@ -48,7 +50,10 @@ class ItemsFragment : Fragment(), ItemsContract.View {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) { R.id.addNewItem -> presenter.addNewItem() }
+        when (item!!.itemId) {
+            R.id.addNewItem -> presenter.addNewItem()
+            R.id.logout -> presenter.logout()
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -175,6 +180,15 @@ class ItemsFragment : Fragment(), ItemsContract.View {
 
     override fun showErrorDeletingItem() {
         view?.showSnackBar("Could not delete item", Snackbar.LENGTH_LONG)
+    }
+
+    override fun logoutOk() {
+        Toast.makeText(context, "Successfully logged out", Toast.LENGTH_LONG).show()
+        startActivity(Intent(activity, LoginActivity::class.java))
+    }
+
+    override fun logoutError(message: String?) {
+        Toast.makeText(context, "Error while logging out: ${message?: "n/a"}", Toast.LENGTH_LONG).show()
     }
 
     interface ItemListener {

@@ -16,6 +16,8 @@ interface ItemsContract {
         fun showDeleteOk(message: String)
         fun showErrorDeletingItem()
         fun showItemDetailUi(item: Item)
+        fun logoutOk()
+        fun logoutError(message: String? = null)
     }
 
     interface Presenter : BasePresenter<View> {
@@ -24,5 +26,6 @@ interface ItemsContract {
         fun addNewItem()
         fun openItemDetail(item: Item)
         fun removeItem(item: Item)
+        fun logout()
     }
 }

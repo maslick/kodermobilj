@@ -6,6 +6,7 @@ import android.net.NetworkInfo
 import com.google.gson.GsonBuilder
 import io.maslick.kodermobile.Config.barkoderBaseDevUrl
 import io.maslick.kodermobile.Config.barkoderBaseProdUrl
+import io.maslick.kodermobile.Config.baseUrl
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
@@ -14,7 +15,10 @@ import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsFragment
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
+import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
+import io.maslick.kodermobile.oauth.SharedPreferencesOAuth2Storage
 import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.IKeycloakRest
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -29,14 +33,16 @@ import java.util.concurrent.TimeUnit
 
 val mvp = module {
     factory { ItemsFragment() }
-    factory { ItemsPresenter(get("dev")) as ItemsContract.Presenter }
+    factory { ItemsPresenter(get("prod"), get(), get()) as ItemsContract.Presenter }
 
     factory { AddEditItemFragment() }
-    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get("dev"), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
+    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get("prod"), get(), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
 }
 
 val sharedPrefsModule = module {
+    fun prefs(context: Context) = context.getSharedPreferences("kodermobile", Context.MODE_PRIVATE)!!
     single { prefs(get()) }
+    single<IOAuth2AccessTokenStorage> { SharedPreferencesOAuth2Storage(get(), get()) }
 }
 
 val cache = module {
@@ -87,9 +93,20 @@ val barkoderApi = module {
             .build()
             .create(IBarkoderApi::class.java)
     }
+    single {
+        Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("$baseUrl/")
+            .client(get())
+            .addConverterFactory(GsonConverterFactory.create(get()))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+
+        retrofit.create(IKeycloakRest::class.java)
+    }
 }
 
-val kodermobileModules = listOf(mvp, barkoderApi, cache)
+val kodermobileModules = listOf(mvp, barkoderApi, cache, sharedPrefsModule)
 
 ///////////////////////////////////////////
 // Helper definitions
@@ -102,15 +119,13 @@ fun cache(context: Context): Cache {
 }
 
 fun hasNetwork(context: Context): Boolean? {
-    var isConnected: Boolean? = false // Initial Value
+    var isConnected: Boolean? = false
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
     if (activeNetwork != null && activeNetwork.isConnected)
         isConnected = true
     return isConnected
 }
-
-fun prefs(context: Context) = context.getSharedPreferences("kodermobile", Context.MODE_PRIVATE)!!
 
 object Properties {
     const val EDIT_ITEM_ID = "EDIT_ITEM_ID"
