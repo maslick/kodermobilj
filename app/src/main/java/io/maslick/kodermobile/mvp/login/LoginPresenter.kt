@@ -3,6 +3,7 @@ package io.maslick.kodermobile.mvp.login
 import android.annotation.SuppressLint
 import android.net.Uri
 import io.maslick.kodermobile.Config
+import io.maslick.kodermobile.helper.UriHelper
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IKeycloakRest
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,11 +15,11 @@ class LoginPresenter(val api: IKeycloakRest, val storage: IOAuth2AccessTokenStor
     override fun start() {}
 
     @SuppressLint("CheckResult")
-    override fun authenticate(uri: Uri?): Boolean {
+    override fun authenticate(uri: String?): Boolean {
         var returnFromAuth = false
 
-        if (uri != null && uri.toString().startsWith(Config.redirectUri)) {
-            val code = uri.getQueryParameter("code")
+        if (uri != null && uri.startsWith(Config.redirectUri)) {
+            val code = UriHelper.splitQuery(uri)["code"]!!
             view.hideAll()
             returnFromAuth = true
             exchangeCodeForToken(code)

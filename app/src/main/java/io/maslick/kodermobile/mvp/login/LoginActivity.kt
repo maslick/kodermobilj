@@ -28,7 +28,7 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
         presenter.view = this
         presenter.start()
 
-        val authenticated = presenter.authenticate(intent.data)
+        val authenticated = presenter.authenticate(intent.data?.toString())
         if (!authenticated) initViews()
 
         login_button.setOnClickListener {
