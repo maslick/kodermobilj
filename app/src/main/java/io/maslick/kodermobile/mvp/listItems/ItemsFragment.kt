@@ -19,7 +19,7 @@ import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.Helper.showSnackBar
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
-import io.maslick.kodermobile.oauth.LoginActivity
+import io.maslick.kodermobile.mvp.login.LoginActivity
 import io.maslick.kodermobile.rest.Item
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.setProperty

@@ -15,6 +15,8 @@ import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsFragment
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
+import io.maslick.kodermobile.mvp.login.LoginContract
+import io.maslick.kodermobile.mvp.login.LoginPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.oauth.SharedPreferencesOAuth2Storage
 import io.maslick.kodermobile.rest.IBarkoderApi
@@ -37,6 +39,8 @@ val mvp = module {
 
     factory { AddEditItemFragment() }
     factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get("prod"), get(), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
+
+    factory { LoginPresenter(get(), get()) as LoginContract.Presenter }
 }
 
 val sharedPrefsModule = module {

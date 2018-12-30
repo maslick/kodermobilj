@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".mvp.addEditItem.AddEditItemActivity" android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity android:name="com.journeyapps.barcodescanner.CaptureActivity" android:screenOrientation="portrait" tools:replace="screenOrientation"/>
-        <activity android:name=".oauth.LoginActivity" android:screenOrientation="portrait">
+        <activity android:name=".mvp.login.LoginActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

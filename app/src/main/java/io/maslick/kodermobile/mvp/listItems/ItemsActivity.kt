@@ -8,7 +8,7 @@ import io.maslick.kodermobile.helper.Helper.isRefreshTokenExpired
 import io.maslick.kodermobile.helper.replaceFragmentInActivity
 import io.maslick.kodermobile.helper.setupActionBar
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
-import io.maslick.kodermobile.oauth.LoginActivity
+import io.maslick.kodermobile.mvp.login.LoginActivity
 import org.koin.android.ext.android.inject
 
 class ItemsActivity : AppCompatActivity() {
