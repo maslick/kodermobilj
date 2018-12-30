@@ -28,15 +28,18 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
         presenter.view = this
         presenter.start()
 
-        val authenticated = presenter.authenticate(intent.data?.toString())
-        if (!authenticated) initViews()
+        presenter.authenticate(intent.data?.toString())
+        initViews()
 
         login_button.setOnClickListener {
-            if (!authenticated) {
                 hideLoginButton()
                 startActivity(Intent(Intent.ACTION_VIEW, presenter.authUrl()))
-            }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        presenter.authenticate(intent?.data?.toString())
     }
 
     override fun initViews() {

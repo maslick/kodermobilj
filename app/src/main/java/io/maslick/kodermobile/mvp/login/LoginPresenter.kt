@@ -15,17 +15,12 @@ class LoginPresenter(val api: IKeycloakRest, val storage: IOAuth2AccessTokenStor
     override fun start() {}
 
     @SuppressLint("CheckResult")
-    override fun authenticate(uri: String?): Boolean {
-        var returnFromAuth = false
-
+    override fun authenticate(uri: String?) {
         if (uri != null && uri.startsWith(Config.redirectUri)) {
             val code = UriHelper.splitQuery(uri)["code"]!!
             view.hideAll()
-            returnFromAuth = true
             exchangeCodeForToken(code)
         }
-
-        return returnFromAuth
     }
 
     override fun authUrl(): Uri {

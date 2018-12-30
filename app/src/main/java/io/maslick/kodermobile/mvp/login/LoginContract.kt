@@ -15,6 +15,6 @@ interface LoginContract {
 
     interface Presenter : BasePresenter<View> {
         fun authUrl(): Uri
-        fun authenticate(uri: String?): Boolean
+        fun authenticate(uri: String?)
     }
 }
