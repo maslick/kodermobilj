@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.maslick.kodermobile.R
+import io.maslick.kodermobile.helper.setupActionBar
 import kotlinx.android.synthetic.main.login_act.*
 import org.koin.android.ext.android.inject
 
@@ -19,6 +20,11 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_act)
+
+        setupActionBar(R.id.toolbar) {
+            title = "Authentication"
+        }
+
         presenter.view = this
         presenter.start()
 
