@@ -69,17 +69,18 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
 
     @SuppressLint("CheckResult")
     override fun logout() {
-        val refreshToken = storage.getStoredAccessToken()!!.refreshToken!!
-        keycloakApi.logout(Config.clientId, refreshToken)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                storage.removeAccessToken()
-                view.logoutOk()
-            }, {
-                it.printStackTrace()
-                view.logoutError(it.message)
-            })
+        storage.getStoredAccessToken()?.refreshToken?.apply {
+            keycloakApi.logout(Config.clientId, this)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    storage.removeAccessToken()
+                    view.logoutOk()
+                }, {
+                    it.printStackTrace()
+                    view.logoutError(it.message)
+                })
+        }
     }
 
     private fun header() = "Bearer ${storage.getStoredAccessToken()?.accessToken}"
