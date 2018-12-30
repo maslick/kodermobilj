@@ -1,12 +1,14 @@
 package io.maslick.kodermobile.items
 
-import io.maslick.kodermobile.helpers.RxSchedulersOverrideRule
+import io.maslick.kodermobile.helpers.RxImmediateSchedulerRule
 import io.maslick.kodermobile.helpers.argumentCaptor
 import io.maslick.kodermobile.helpers.capture
 import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
+import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.IKeycloakRest
 import io.maslick.kodermobile.rest.Item
 import io.maslick.kodermobile.rest.Response
 import io.maslick.kodermobile.rest.Status.ERROR
@@ -17,29 +19,27 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
+import org.mockito.Mockito.*
+import org.mockito.junit.MockitoJUnit
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class ItemsPresenterTest {
 
-    @Rule @JvmField val rx = RxSchedulersOverrideRule()
+    @Rule @JvmField val rule = MockitoJUnit.rule()!!
+    @Rule @JvmField val testSchedulerRule = RxImmediateSchedulerRule()
 
     @Mock private lateinit var barkoderApi: IBarkoderApi
     @Mock private lateinit var itemsView: ItemsContract.View
+    @Mock private lateinit var keycloakApi: IKeycloakRest
+    @Mock private lateinit var storage: IOAuth2AccessTokenStorage
     private lateinit var itemsPresenter: ItemsPresenter
     private lateinit var items: MutableList<Item>
 
     @Before
     fun beforeItemsPresenter() {
-        MockitoAnnotations.initMocks(this)
-
-        itemsPresenter = ItemsPresenter(barkoderApi)
+        itemsPresenter = ItemsPresenter(barkoderApi, keycloakApi, storage)
         itemsPresenter.view = itemsView
-
-        kogda(itemsView.isActive).thenReturn(true)
 
         items = mutableListOf(
             Item(1, "title1", "category1", "description1", "123456789", 1),
@@ -50,16 +50,16 @@ class ItemsPresenterTest {
 
     @Test
     fun loadAllItemsIntoView() {
-        kogda(barkoderApi.getAllItems()).thenReturn(Observable.just(items))
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
         itemsPresenter.loadItems()
-
-        val inOrder = Mockito.inOrder(itemsView)
+        val inOrder = inOrder(itemsView)
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
 
-        val argumentCaptor = argumentCaptor<List<Item>>()
-        verify(itemsView).showItems(capture(argumentCaptor))
-        Assert.assertEquals(3, argumentCaptor.value.size)
+        val captor = argumentCaptor<List<Item>>()
+        verify(itemsView).showItems(capture(captor))
+        verify(barkoderApi).getAllItems(anyString())
+        Assert.assertEquals(3, captor.value.size)
     }
 
     @Test
@@ -77,28 +77,28 @@ class ItemsPresenterTest {
 
     @Test
     fun clickDeleteItem() {
-        kogda(barkoderApi.deleteItemWithId(items[0].id!!))
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString()))
             .thenReturn(Observable.just(Response(OK, null)))
 
         itemsPresenter.removeItem(items[0])
-        verify(barkoderApi).deleteItemWithId(items[0].id!!)
-        verify(itemsView).showDeleteOk(Mockito.anyString())
+        verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
+        verify(itemsView).showDeleteOk(anyString())
     }
 
     @Test
     fun clickDeleteItemError() {
-        kogda(barkoderApi.deleteItemWithId(items[1].id!!))
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString()))
             .thenReturn(Observable.just(Response(ERROR, "Error deleting item!")))
 
         itemsPresenter.removeItem(items[1])
-        verify(barkoderApi).deleteItemWithId(items[1].id!!)
+        verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
         verify(itemsView).showErrorDeletingItem()
     }
 
     @Test
     fun noNetwork() {
-        val inOrder = Mockito.inOrder(itemsView)
-        kogda(barkoderApi.getAllItems()).thenReturn(Observable.error(UnknownHostException()))
+        val inOrder = inOrder(itemsView)
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.error(UnknownHostException()))
 
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
@@ -108,8 +108,8 @@ class ItemsPresenterTest {
 
     @Test
     fun backendUnreachable() {
-        val inOrder = Mockito.inOrder(itemsView)
-        kogda(barkoderApi.getAllItems()).thenReturn(Observable.error(SocketTimeoutException()))
+        val inOrder = inOrder(itemsView)
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.error(SocketTimeoutException()))
 
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)

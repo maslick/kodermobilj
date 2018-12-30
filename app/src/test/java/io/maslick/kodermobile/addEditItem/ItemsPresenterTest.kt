@@ -1,9 +1,11 @@
 package io.maslick.kodermobile.addEditItem
 
-import io.maslick.kodermobile.helpers.RxSchedulersOverrideRule
+import io.maslick.kodermobile.helpers.RxImmediateSchedulerRule
+import io.maslick.kodermobile.helpers.any
 import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
+import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.Item
 import io.maslick.kodermobile.rest.Response
@@ -14,15 +16,18 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.anyString
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
 
 class AddItemPresenterTest {
 
-    @Rule @JvmField val rx = RxSchedulersOverrideRule()
+    @Rule @JvmField val rule = MockitoJUnit.rule()!!
+    @Rule @JvmField val testSchedulerRule = RxImmediateSchedulerRule()
 
     @Mock private lateinit var barkoderApi: IBarkoderApi
     @Mock private lateinit var addItemView: AddEditItemContract.View
+    @Mock private lateinit var storage: IOAuth2AccessTokenStorage
 
     private lateinit var addItemPresenter: AddEditItemPresenter
 
@@ -33,63 +38,62 @@ class AddItemPresenterTest {
     )
 
     @Before
-    fun beforeItemsPresenter() {
-        MockitoAnnotations.initMocks(this)
-    }
+    fun beforeItemsPresenter() {}
 
     @Test
     fun addNewItemOk() {
-        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.postItem(items[0])).thenReturn(Observable.just(Response(OK, null)))
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response(OK, null)))
 
         addItemPresenter.saveItem(items[0])
-        verify(barkoderApi).postItem(items[0])
+        verify(barkoderApi).postItem(any(), anyString())
         verify(addItemView).showItems()
     }
 
     @Test
     fun addNewItemError() {
-        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.postItem(items[1])).thenReturn(Observable.just(Response(ERROR, "This item already exists")))
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response(ERROR, "This item already exists")))
 
         addItemPresenter.saveItem(items[1])
-        verify(barkoderApi).postItem(items[1])
+        verify(barkoderApi).postItem(any(), anyString())
         verify(addItemView).showSaveItemError()
     }
 
     @Test
     fun showExistingItemAndEditIt() {
-        addItemPresenter = AddEditItemPresenter(items[2], barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(items[2], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.editItem(items[2])).thenReturn(Observable.just(Response(OK, null)))
+        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response(OK, null)))
 
         addItemPresenter.start()
         verify(addItemView).populateItem(items[2])
 
         addItemPresenter.saveItem(items[2])
-        verify(barkoderApi).editItem(items[2])
+        verify(barkoderApi).editItem(any(), anyString())
         verify(addItemView).showItems()
     }
 
     @Test
     fun showExistingItemAndEditItError() {
-        addItemPresenter = AddEditItemPresenter(items[0], barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(items[0], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.editItem(items[0])).thenReturn(Observable.just(Response(ERROR, "Item with this barcode already exists!")))
+        kogda(barkoderApi.editItem(any(), anyString()))
+            .thenReturn(Observable.just(Response(ERROR, "Item with this barcode already exists!")))
 
         addItemPresenter.start()
         verify(addItemView).populateItem(items[0])
 
         addItemPresenter.saveItem(items[0])
-        verify(barkoderApi).editItem(items[0])
+        verify(barkoderApi).editItem(any(), anyString())
         verify(addItemView).showSaveItemError()
     }
 
     @Test
     fun testBarcodeScanner() {
-        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
 
         addItemPresenter.scanCode()
@@ -104,7 +108,7 @@ class AddItemPresenterTest {
 
     @Test
     fun testItemValidationBeforeSave() {
-        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
 
         addItemPresenter.saveItem(Item())
@@ -116,7 +120,7 @@ class AddItemPresenterTest {
 
     @Test
     fun testItemValidationBeforeEdit() {
-        addItemPresenter = AddEditItemPresenter(items[2], barkoderApi, true)
+        addItemPresenter = AddEditItemPresenter(items[2], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
 
         addItemPresenter.saveItem(Item())
