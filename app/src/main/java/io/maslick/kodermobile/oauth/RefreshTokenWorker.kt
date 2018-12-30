@@ -1,16 +1,9 @@
 package io.maslick.kodermobile.oauth
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.graphics.Color
-import android.os.Build
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import androidx.work.*
 import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import io.maslick.kodermobile.Config
-import io.maslick.kodermobile.helper.Helper.formatDate
 import io.maslick.kodermobile.rest.IKeycloakRest
 import io.maslick.kodermobile.rest.KeycloakToken
 import org.koin.standalone.KoinComponent
@@ -32,74 +25,21 @@ class RefreshTokenWorker(context: Context, params: WorkerParameters): Worker(con
 
             WorkManager.getInstance().enqueueUniquePeriodicWork("barkoder-refresh-token-work", REPLACE, periodicWork)
         }
-
-        const val channelId = "barkoder_channel_id"
-    }
-
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "barkoder notification channel", NotificationManager.IMPORTANCE_DEFAULT)
-            val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
     }
 
     private val api: IKeycloakRest by inject()
     private val storage: IOAuth2AccessTokenStorage by inject()
 
     override fun doWork(): Result {
-        val notificationId = System.currentTimeMillis().toInt()
-        triggerTokenNotification(notificationId)
         if (storage.getStoredAccessToken() == null || storage.getStoredAccessToken()!!.refreshToken == null)
             return Result.failure()
 
         return try {
-            val token = saveTokenToStorage(api.refreshAccessToken(storage.getStoredAccessToken()!!.refreshToken!!, Config.clientId).blockingFirst())
-            showOk(System.currentTimeMillis().toInt(), "Token is valid until: ${token.tokenExpirationDate!!.formatDate()}")
-            showOk(notificationId, "Refresh token is valid until: ${token.refreshTokenExpirationDate!!.formatDate()}")
+            saveTokenToStorage(api.refreshAccessToken(storage.getStoredAccessToken()!!.refreshToken!!, Config.clientId).blockingFirst())
             Result.success()
         } catch (e: Exception) {
-            showError(notificationId)
+            e.printStackTrace()
             Result.retry()
-        }
-    }
-
-    private fun triggerTokenNotification(id: Int) {
-        val builder = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.drawable.notification_icon_background)
-            .setContentTitle("Barkoder")
-            .setContentText("Updating token using refresh token...")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setColor(Color.BLUE)
-
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(id, builder.build())
-        }
-    }
-
-    private fun showOk(id: Int, message: String) {
-        val builder = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.drawable.notification_icon_background)
-            .setContentTitle("Barkoder")
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setColor(Color.GREEN)
-
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(id, builder.build())
-        }
-    }
-
-    private fun showError(id: Int) {
-        val builder = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.drawable.notification_icon_background)
-            .setContentTitle("Barkoder")
-            .setContentText("Token refresh failed :(")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setColor(Color.RED)
-
-        with(NotificationManagerCompat.from(applicationContext)) {
-            notify(id, builder.build())
         }
     }
 
