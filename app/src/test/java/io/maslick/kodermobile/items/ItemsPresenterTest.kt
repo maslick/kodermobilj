@@ -7,10 +7,7 @@ import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
-import io.maslick.kodermobile.rest.IBarkoderApi
-import io.maslick.kodermobile.rest.IKeycloakRest
-import io.maslick.kodermobile.rest.Item
-import io.maslick.kodermobile.rest.Response
+import io.maslick.kodermobile.rest.*
 import io.maslick.kodermobile.rest.Status.ERROR
 import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
@@ -23,6 +20,7 @@ import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnit
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.*
 
 class ItemsPresenterTest {
 
@@ -60,6 +58,22 @@ class ItemsPresenterTest {
         verify(itemsView).showItems(capture(captor))
         verify(barkoderApi).getAllItems(anyString())
         Assert.assertEquals(3, captor.value.size)
+    }
+
+    @Test
+    fun dontLoadItemsIfTokenExpired() {
+        kogda(storage.getStoredAccessToken()).thenReturn(KeycloakToken(tokenExpirationDate = null))
+        itemsPresenter.start()
+        verify(itemsView, never()).showItems(anyList())
+    }
+
+    @Test
+    fun loadItemsIfTokenValid() {
+        val token = KeycloakToken(tokenExpirationDate = GregorianCalendar(2099, 1, 1))
+        kogda(storage.getStoredAccessToken()).thenReturn(token)
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
+        itemsPresenter.start()
+        verify(itemsView).showItems(anyList())
     }
 
     @Test

@@ -3,6 +3,7 @@ package io.maslick.kodermobile.mvp.listItems
 import android.annotation.SuppressLint
 import android.app.Activity
 import io.maslick.kodermobile.Config
+import io.maslick.kodermobile.helper.Helper
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
@@ -21,6 +22,7 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
     var dataFetched = false
 
     override fun start() {
+        if (Helper.isTokenExpired(storage.getStoredAccessToken())) return
         if (!dataFetched) loadItems()
     }
 
