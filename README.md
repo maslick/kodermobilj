@@ -24,7 +24,7 @@ object Config {
     const val barkoderBaseDevUrl = "[BARKODER_URL]"
     const val barkoderBaseProdUrl = "[BARKODER_URL]"
     
-    const val clientId = "[CLIENT_ID]
+    const val clientId = "[CLIENT_ID]"
     const val baseUrl = "https://[KEYCLOAK_URL]/auth/realms/[REALM]/protocol/openid-connect"
     const val authenticationCodeUrl = "$baseUrl/auth"
     const val redirectUri = "barkoder://oauthresponse"
