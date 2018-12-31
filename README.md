@@ -13,6 +13,7 @@ Android native client for [barkoder](https://github.com/maslick/barkoder)
 * Scans the product barcode and pushes it to a ``barkoder`` hosted backend
 * Simple CRUD operations
 * MVP architecture (Kotlin + Koin)
+* Protected by Keycloak
 * Using OkHttp v3, Retrofit v2, RxJava v2, Koin v1
 
 
@@ -22,5 +23,10 @@ Edit the file ``Config.kt`` according to your setup:
 object Config {
     const val barkoderBaseDevUrl = "[BARKODER_URL]"
     const val barkoderBaseProdUrl = "[BARKODER_URL]"
+    
+    const val clientId = "[CLIENT_ID]
+    const val baseUrl = "https://[KEYCLOAK_URL]/auth/realms/[REALM]/protocol/openid-connect"
+    const val authenticationCodeUrl = "$baseUrl/auth"
+    const val redirectUri = "barkoder://oauthresponse"
 }
 ```
