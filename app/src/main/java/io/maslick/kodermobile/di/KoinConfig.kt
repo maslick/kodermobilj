@@ -4,9 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.google.gson.GsonBuilder
-import io.maslick.kodermobile.Config.barkoderBaseDevUrl
-import io.maslick.kodermobile.Config.barkoderBaseProdUrl
-import io.maslick.kodermobile.Config.baseUrl
+import io.maslick.kodermobile.Config.barkoderBaseUrl
+import io.maslick.kodermobile.Config.keycloakBaseUrl
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
@@ -35,16 +34,15 @@ import java.util.concurrent.TimeUnit
 
 val mvp = module {
     factory { ItemsFragment() }
-    factory { ItemsPresenter(get("prod"), get(), get()) as ItemsContract.Presenter }
+    factory { ItemsPresenter(get(), get(), get()) as ItemsContract.Presenter }
 
     factory { AddEditItemFragment() }
-    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get("prod"), get(), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
+    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get(), get(), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
 
     factory { LoginPresenter(get(), get()) as LoginContract.Presenter }
 }
 
-val sharedPrefsModule = module {
-    fun prefs(context: Context) = context.getSharedPreferences("kodermobile", Context.MODE_PRIVATE)!!
+val sharedPrefs = module {
     single { prefs(get()) }
     single<IOAuth2AccessTokenStorage> { SharedPreferencesOAuth2Storage(get(), get()) }
 }
@@ -79,42 +77,35 @@ val barkoderApi = module {
             .writeTimeout(5, TimeUnit.SECONDS)
             .build()
     }
-    single("dev") {
-        Retrofit.Builder()
-            .baseUrl(barkoderBaseDevUrl)
-            .client(get())
-            .addConverterFactory(GsonConverterFactory.create(get()))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(IBarkoderApi::class.java)
-    }
-    single("prod") {
-        Retrofit.Builder()
-            .baseUrl(barkoderBaseProdUrl)
-            .client(get())
-            .addConverterFactory(GsonConverterFactory.create(get()))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(IBarkoderApi::class.java)
-    }
     single {
         Retrofit.Builder()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("$baseUrl/")
+            .baseUrl(barkoderBaseUrl)
             .client(get())
             .addConverterFactory(GsonConverterFactory.create(get()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-
-        retrofit.create(IKeycloakRest::class.java)
+            .create(IBarkoderApi::class.java)
     }
 }
 
-val kodermobileModules = listOf(mvp, barkoderApi, cache, sharedPrefsModule)
+val keycloakApi = module {
+    single {
+        Retrofit.Builder()
+            .baseUrl("$keycloakBaseUrl/")
+            .client(get())
+            .addConverterFactory(GsonConverterFactory.create(get()))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+            .create(IKeycloakRest::class.java)
+    }
+}
+
+val kodermobileModules = listOf(mvp, barkoderApi, keycloakApi, cache, sharedPrefs)
 
 ///////////////////////////////////////////
 // Helper definitions
 ///////////////////////////////////////////
+fun prefs(context: Context) = context.getSharedPreferences("kodermobile", Context.MODE_PRIVATE)!!
 
 fun cache(context: Context): Cache {
     val file = File(context.cacheDir, "httpCache")
