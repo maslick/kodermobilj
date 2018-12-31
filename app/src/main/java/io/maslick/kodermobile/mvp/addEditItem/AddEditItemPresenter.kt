@@ -1,6 +1,7 @@
 package io.maslick.kodermobile.mvp.addEditItem
 
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
+import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.Item
 import io.maslick.kodermobile.rest.Status
@@ -11,6 +12,7 @@ import org.koin.standalone.setProperty
 
 class AddEditItemPresenter(private val selectedItem: Item,
                            private val barkoderApi: IBarkoderApi,
+                           val storage: IOAuth2AccessTokenStorage,
                            override var loadData: Boolean) : AddEditItemContract.Presenter, KoinComponent {
     override lateinit var view: AddEditItemContract.View
 
@@ -24,7 +26,7 @@ class AddEditItemPresenter(private val selectedItem: Item,
         else {
             view.startLoadingIndicator()
             if (selectedItem.id == null)
-                barkoderApi.postItem(item)
+                barkoderApi.postItem(item, header())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
@@ -37,7 +39,7 @@ class AddEditItemPresenter(private val selectedItem: Item,
                     })
             else {
                 item.id = selectedItem.id
-                barkoderApi.editItem(item)
+                barkoderApi.editItem(item, header())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
@@ -64,4 +66,6 @@ class AddEditItemPresenter(private val selectedItem: Item,
     override fun stop() {
         setProperty(LOAD_DATA, loadData)
     }
+
+    private fun header() = "Bearer ${storage.getStoredAccessToken()?.accessToken}"
 }

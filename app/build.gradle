@@ -109,6 +109,9 @@ dependencies {
 
     // bottom sheet
     implementation 'com.github.Kennyc1012:BottomSheet:2.4.1'
+
+    // WorkManager
+    implementation 'android.arch.work:work-runtime-ktx:1.0.0-beta01'
 }
 
 jacoco {

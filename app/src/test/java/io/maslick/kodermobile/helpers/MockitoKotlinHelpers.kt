@@ -35,8 +35,12 @@ fun <T> eq(obj: T): T = Mockito.eq<T>(obj)
  * Returns Mockito.any() as nullable type to avoid java.lang.IllegalStateException when
  * null is returned.
  */
-fun <T> any(): T = Mockito.any<T>()
+fun <T> any(): T {
+    Mockito.any<T>()
+    return uninitialized()
+}
 
+fun <T> uninitialized(): T = null as T
 
 /**
  * Returns ArgumentCaptor.capture() as nullable type to avoid java.lang.IllegalStateException
@@ -49,7 +53,7 @@ fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
  * Helper function for creating an argumentCaptor in kotlin.
  */
 inline fun <reified T : Any> argumentCaptor(): ArgumentCaptor<T> =
-        ArgumentCaptor.forClass(T::class.java)
+    ArgumentCaptor.forClass(T::class.java)
 
 
 fun <R> kogda(methodCall: R) = Mockito.`when`(methodCall)
