@@ -32,8 +32,8 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
         initViews()
 
         login_button.setOnClickListener {
-                hideLoginButton()
-                startActivity(Intent(Intent.ACTION_VIEW, presenter.authUrl()))
+            hideLoginButton()
+            startActivity(Intent(Intent.ACTION_VIEW, presenter.authUrl()))
         }
     }
 
