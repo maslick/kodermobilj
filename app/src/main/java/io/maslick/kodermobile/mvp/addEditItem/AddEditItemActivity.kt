@@ -39,6 +39,6 @@ class AddEditItemActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val REQUEST_ADD_ITEM = 1
+        const val ADD_ITEM_REQUEST_CODE = 1
     }
 }

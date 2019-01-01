@@ -1,11 +1,13 @@
 package io.maslick.kodermobile.mvp.listItems
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import io.maslick.kodermobile.Config
 import io.maslick.kodermobile.helper.Helper
-import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
+import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity.Companion.ADD_ITEM_REQUEST_CODE
+import io.maslick.kodermobile.mvp.listItems.ItemsActivity.Companion.AUTHORIZATION_REQUEST_CODE
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
+import io.maslick.kodermobile.oauth.parseJwtToken
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.IKeycloakRest
 import io.maslick.kodermobile.rest.Item
@@ -22,7 +24,10 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
     var dataFetched = false
 
     override fun start() {
-        if (Helper.isTokenExpired(storage.getStoredAccessToken())) return
+        if (Helper.isRefreshTokenExpired(storage.getStoredAccessToken())) {
+            view.startAuthActivity()
+            return
+        }
         if (!dataFetched) loadItems()
     }
 
@@ -44,8 +49,17 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
     }
 
     override fun result(requestCode: Int, resultCode: Int) {
-        if (AddEditItemActivity.REQUEST_ADD_ITEM == requestCode && Activity.RESULT_OK == resultCode)
-            view.showSuccessfullySavedItem()
+        when (requestCode) {
+            ADD_ITEM_REQUEST_CODE -> {
+                if (resultCode == RESULT_OK)
+                    view.showSuccessfullySavedItem()
+            }
+            AUTHORIZATION_REQUEST_CODE -> {
+                val user = parseJwtToken(storage.getStoredAccessToken()?.accessToken)
+                if (resultCode == RESULT_OK) view.showAuthOk(user.email ?: "n/a")
+                else view.showAuthError()
+            }
+        }
     }
 
     override fun addNewItem() {
