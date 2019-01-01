@@ -25,7 +25,7 @@ class AddEditItemActivity : AppCompatActivity() {
         setupActionBar(R.id.toolbar) {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            title = if (selectedItem.id == null) "Add new Item" else "Edit Item ${selectedItem.id}"
+            title = if (selectedItem.id == null) "Add new Item" else "Edit Item"
         }
 
         supportFragmentManager.findFragmentById(R.id.addEditItemContentFrame) as AddEditItemFragment? ?: addEditItemFragment.also {

@@ -76,7 +76,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
 
     override fun initiateCodeScan() {
         val integrator = IntentIntegrator.forSupportFragment(this)
-        integrator.setPrompt("Scan your invoice, pa-lease :) \n")
+        integrator.setPrompt("Scan your barcode, pa-lease :) \n")
         integrator.setBarcodeImageEnabled(false)
         integrator.initiateScan()
     }
