@@ -18,6 +18,9 @@ interface ItemsContract {
         fun showItemDetailUi(item: Item)
         fun logoutOk()
         fun logoutError(message: String? = null)
+        fun startAuthActivity()
+        fun showAuthOk(user: String)
+        fun showAuthError()
     }
 
     interface Presenter : BasePresenter<View> {

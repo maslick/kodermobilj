@@ -19,6 +19,8 @@ import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.Helper.showSnackBar
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
+import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity.Companion.ADD_ITEM_REQUEST_CODE
+import io.maslick.kodermobile.mvp.listItems.ItemsActivity.Companion.AUTHORIZATION_REQUEST_CODE
 import io.maslick.kodermobile.mvp.login.LoginActivity
 import io.maslick.kodermobile.rest.Item
 import org.koin.android.ext.android.inject
@@ -43,6 +45,18 @@ class ItemsFragment : Fragment(), ItemsContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         presenter.result(requestCode, resultCode)
+    }
+
+    override fun startAuthActivity() {
+        startActivityForResult(Intent(activity, LoginActivity::class.java), AUTHORIZATION_REQUEST_CODE)
+    }
+
+    override fun showAuthOk(user: String) {
+        view?.showSnackBar("Signed in as $user", Snackbar.LENGTH_LONG)
+    }
+
+    override fun showAuthError() {
+        view?.showSnackBar("Could not sign in :(", Snackbar.LENGTH_LONG)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
@@ -154,13 +168,13 @@ class ItemsFragment : Fragment(), ItemsContract.View {
     override fun showAddItem() {
         val intent = Intent(context, AddEditItemActivity::class.java)
         setProperty(EDIT_ITEM_ID, Item())
-        startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
+        startActivityForResult(intent, ADD_ITEM_REQUEST_CODE)
     }
 
     override fun showItemDetailUi(item: Item) {
         val intent = Intent(context, AddEditItemActivity::class.java)
         setProperty(EDIT_ITEM_ID, item)
-        startActivityForResult(intent, AddEditItemActivity.REQUEST_ADD_ITEM)
+        startActivityForResult(intent, ADD_ITEM_REQUEST_CODE)
     }
 
     override fun setLoadingIndicator(active: Boolean) {
@@ -184,7 +198,7 @@ class ItemsFragment : Fragment(), ItemsContract.View {
 
     override fun logoutOk() {
         Toast.makeText(context, "Successfully logged out", Toast.LENGTH_LONG).show()
-        startActivity(Intent(activity, LoginActivity::class.java))
+        startActivityForResult(Intent(activity, LoginActivity::class.java), AUTHORIZATION_REQUEST_CODE)
     }
 
     override fun logoutError(message: String?) {

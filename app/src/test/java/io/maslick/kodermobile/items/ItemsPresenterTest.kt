@@ -69,7 +69,8 @@ class ItemsPresenterTest {
 
     @Test
     fun loadItemsIfTokenValid() {
-        val token = KeycloakToken(tokenExpirationDate = GregorianCalendar(2099, 1, 1))
+        val expiryDate = GregorianCalendar(2099, 1, 1)
+        val token = KeycloakToken(tokenExpirationDate = expiryDate, refreshTokenExpirationDate = expiryDate)
         kogda(storage.getStoredAccessToken()).thenReturn(token)
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
         itemsPresenter.start()
@@ -129,6 +130,5 @@ class ItemsPresenterTest {
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
         verify(itemsView).showLoadingItemsError()
-
     }
 }
