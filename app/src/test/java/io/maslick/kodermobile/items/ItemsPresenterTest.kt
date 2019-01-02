@@ -4,13 +4,19 @@ import io.maslick.kodermobile.helpers.RxImmediateSchedulerRule
 import io.maslick.kodermobile.helpers.argumentCaptor
 import io.maslick.kodermobile.helpers.capture
 import io.maslick.kodermobile.helpers.kogda
+import io.maslick.kodermobile.model.Item
+import io.maslick.kodermobile.model.ItemDao
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
-import io.maslick.kodermobile.rest.*
+import io.maslick.kodermobile.rest.IBarkoderApi
+import io.maslick.kodermobile.rest.IKeycloakRest
+import io.maslick.kodermobile.rest.KeycloakToken
+import io.maslick.kodermobile.rest.Response
 import io.maslick.kodermobile.rest.Status.ERROR
 import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -28,6 +34,7 @@ class ItemsPresenterTest {
     @Rule @JvmField val testSchedulerRule = RxImmediateSchedulerRule()
 
     @Mock private lateinit var barkoderApi: IBarkoderApi
+    @Mock private lateinit var itemDao: ItemDao
     @Mock private lateinit var itemsView: ItemsContract.View
     @Mock private lateinit var keycloakApi: IKeycloakRest
     @Mock private lateinit var storage: IOAuth2AccessTokenStorage
@@ -36,7 +43,7 @@ class ItemsPresenterTest {
 
     @Before
     fun beforeItemsPresenter() {
-        itemsPresenter = ItemsPresenter(barkoderApi, keycloakApi, storage)
+        itemsPresenter = ItemsPresenter(barkoderApi, itemDao, keycloakApi, storage)
         itemsPresenter.view = itemsView
 
         items = mutableListOf(
@@ -49,6 +56,7 @@ class ItemsPresenterTest {
     @Test
     fun loadAllItemsIntoView() {
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
+        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
         itemsPresenter.loadItems()
         val inOrder = inOrder(itemsView)
         inOrder.verify(itemsView).setLoadingIndicator(true)
@@ -73,6 +81,7 @@ class ItemsPresenterTest {
         val token = KeycloakToken(tokenExpirationDate = expiryDate, refreshTokenExpirationDate = expiryDate)
         kogda(storage.getStoredAccessToken()).thenReturn(token)
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
+        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
         itemsPresenter.start()
         verify(itemsView).showItems(anyList())
     }
@@ -114,21 +123,23 @@ class ItemsPresenterTest {
     fun noNetwork() {
         val inOrder = inOrder(itemsView)
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.error(UnknownHostException()))
+        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
 
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
-        verify(itemsView).showLoadingItemsError()
+        verify(itemsView).showLoadingItemsError(anyString())
     }
 
     @Test
     fun backendUnreachable() {
         val inOrder = inOrder(itemsView)
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.error(SocketTimeoutException()))
+        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
 
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
-        verify(itemsView).showLoadingItemsError()
+        verify(itemsView).showLoadingItemsError(anyString())
     }
 }

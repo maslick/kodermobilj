@@ -1,5 +1,6 @@
 package io.maslick.kodermobile.di
 
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -8,6 +9,7 @@ import io.maslick.kodermobile.Config.barkoderBaseUrl
 import io.maslick.kodermobile.Config.keycloakBaseUrl
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
+import io.maslick.kodermobile.model.ItemDatabase
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemFragment
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
@@ -34,7 +36,7 @@ import java.util.concurrent.TimeUnit
 
 val mvp = module {
     factory { ItemsFragment() }
-    factory { ItemsPresenter(get(), get(), get()) as ItemsContract.Presenter }
+    factory { ItemsPresenter(get(), get(), get(), get()) as ItemsContract.Presenter }
 
     factory { AddEditItemFragment() }
     factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get(), get(), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
@@ -70,9 +72,7 @@ val barkoderApi = module {
     single {
         OkHttpClient()
             .newBuilder()
-            .cache(get())
             .addInterceptor(get("loggingInterceptor"))
-            .addInterceptor(get("cacheInterceptor"))
             .readTimeout(5, TimeUnit.SECONDS)
             .writeTimeout(5, TimeUnit.SECONDS)
             .build()
@@ -100,7 +100,11 @@ val keycloakApi = module {
     }
 }
 
-val kodermobileModules = listOf(mvp, barkoderApi, keycloakApi, cache, sharedPrefs)
+val room = module {
+    single { roomDb(get()).itemDao() }
+}
+
+val kodermobileModules = listOf(mvp, barkoderApi, keycloakApi, sharedPrefs, room)
 
 ///////////////////////////////////////////
 // Helper definitions
@@ -120,6 +124,10 @@ fun hasNetwork(context: Context): Boolean? {
     if (activeNetwork != null && activeNetwork.isConnected)
         isConnected = true
     return isConnected
+}
+
+fun roomDb(context: Context): ItemDatabase {
+    return Room.databaseBuilder(context, ItemDatabase::class.java, "items-db").build()
 }
 
 object Properties {

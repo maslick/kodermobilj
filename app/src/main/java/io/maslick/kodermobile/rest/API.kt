@@ -1,5 +1,6 @@
 package io.maslick.kodermobile.rest
 
+import io.maslick.kodermobile.model.Item
 import io.reactivex.Observable
 import retrofit2.http.*
 
@@ -28,15 +29,6 @@ interface IBarkoderApi {
     @DELETE("barcode/{barcode}")
     fun deleteItemWithBarcode(@Path("barcode") barcode: String, @Header("Authorization") header: String = ""): Observable<Response>
 }
-
-data class Item(
-    var id: Int? = null,
-    var title: String? = null,
-    var category: String? = null,
-    var description: String? = null,
-    var barcode: String? = null,
-    var quantity: Int? = null
-)
 
 enum class Status { ERROR, OK }
 data class Response(val status: Status, val errorMessage: String? = null)

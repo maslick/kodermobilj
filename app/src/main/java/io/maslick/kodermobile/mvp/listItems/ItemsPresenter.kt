@@ -4,18 +4,21 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import io.maslick.kodermobile.Config
 import io.maslick.kodermobile.helper.Helper
+import io.maslick.kodermobile.model.Item
+import io.maslick.kodermobile.model.ItemDao
+import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity.Companion.ADD_ITEM_REQUEST_CODE
 import io.maslick.kodermobile.mvp.listItems.ItemsActivity.Companion.AUTHORIZATION_REQUEST_CODE
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.oauth.parseJwtToken
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.IKeycloakRest
-import io.maslick.kodermobile.rest.Item
 import io.maslick.kodermobile.rest.Status
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class ItemsPresenter(private val barkoderApi: IBarkoderApi,
+                     private val dao: ItemDao,
                      private val keycloakApi: IKeycloakRest,
                      private val storage: IOAuth2AccessTokenStorage) : ItemsContract.Presenter {
 
@@ -33,8 +36,9 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
 
     @SuppressLint("CheckResult")
     override fun loadItems() {
+        val repo = ItemRepo(barkoderApi, dao, view)
         view.setLoadingIndicator(true)
-        barkoderApi.getAllItems(header())
+        repo.getAllItems(header())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ items ->
