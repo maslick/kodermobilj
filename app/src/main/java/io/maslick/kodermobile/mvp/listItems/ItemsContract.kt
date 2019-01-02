@@ -1,8 +1,8 @@
 package io.maslick.kodermobile.mvp.listItems
 
+import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.mvp.BasePresenter
 import io.maslick.kodermobile.mvp.BaseView
-import io.maslick.kodermobile.rest.Item
 
 interface ItemsContract {
     interface View : BaseView<Presenter> {
@@ -11,7 +11,7 @@ interface ItemsContract {
         fun showItems(items: List<Item>)
         fun showAddItem()
         fun showSuccessfullySavedItem()
-        fun showLoadingItemsError()
+        fun showLoadingItemsError(message: String = "")
         fun showNoItems()
         fun showDeleteOk(message: String)
         fun showErrorDeletingItem()

@@ -18,11 +18,11 @@ import com.kennyc.bottomsheet.BottomSheetListener
 import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.Helper.showSnackBar
+import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity.Companion.ADD_ITEM_REQUEST_CODE
 import io.maslick.kodermobile.mvp.listItems.ItemsActivity.Companion.AUTHORIZATION_REQUEST_CODE
 import io.maslick.kodermobile.mvp.login.LoginActivity
-import io.maslick.kodermobile.rest.Item
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.setProperty
 
@@ -106,8 +106,8 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         lineAdapter.items = items.sortedByDescending { it.id }
     }
 
-    override fun showLoadingItemsError() {
-        view?.showSnackBar("Error while loading items", Snackbar.LENGTH_LONG)
+    override fun showLoadingItemsError(message: String) {
+        view?.showSnackBar("Error while loading items$message", Snackbar.LENGTH_LONG)
     }
 
     override fun showNoItems() {

@@ -3,7 +3,7 @@ package io.maslick.kodermobile.mvp.addEditItem
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
-import io.maslick.kodermobile.rest.Item
+import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.rest.Status
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

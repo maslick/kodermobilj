@@ -3,11 +3,11 @@ package io.maslick.kodermobile.addEditItem
 import io.maslick.kodermobile.helpers.RxImmediateSchedulerRule
 import io.maslick.kodermobile.helpers.any
 import io.maslick.kodermobile.helpers.kogda
+import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
-import io.maslick.kodermobile.rest.Item
 import io.maslick.kodermobile.rest.Response
 import io.maslick.kodermobile.rest.Status.ERROR
 import io.maslick.kodermobile.rest.Status.OK

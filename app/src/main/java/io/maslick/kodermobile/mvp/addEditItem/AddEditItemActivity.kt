@@ -6,7 +6,7 @@ import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.replaceFragmentInActivity
 import io.maslick.kodermobile.helper.setupActionBar
-import io.maslick.kodermobile.rest.Item
+import io.maslick.kodermobile.model.Item
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.property
 import org.koin.android.ext.android.setProperty
