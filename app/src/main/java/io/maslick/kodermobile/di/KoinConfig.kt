@@ -10,6 +10,7 @@ import io.maslick.kodermobile.Config.keycloakBaseUrl
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.model.ItemDatabase
+import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemFragment
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
@@ -102,6 +103,7 @@ val keycloakApi = module {
 
 val room = module {
     single { roomDb(get()).itemDao() }
+    single { ItemRepo(get(), get()) }
 }
 
 val kodermobileModules = listOf(mvp, barkoderApi, keycloakApi, sharedPrefs, room)

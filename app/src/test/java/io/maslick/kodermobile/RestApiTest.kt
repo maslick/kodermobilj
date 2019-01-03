@@ -1,8 +1,8 @@
 package io.maslick.kodermobile
 
 import com.google.gson.GsonBuilder
-import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.model.Item
+import io.maslick.kodermobile.rest.IBarkoderApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.junit.BeforeClass
@@ -55,7 +55,7 @@ class RestApiTest {
     fun testGetAllItems() {
         val latch = CountDownLatch(1)
         api.getAllItems().subscribe {
-            it.forEach { item -> println(item) }
+            it.body()?.forEach { item -> println(item) }
             latch.countDown()
         }
         latch.await(30, TimeUnit.SECONDS)
