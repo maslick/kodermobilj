@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import io.maslick.kodermobile.Config
 import io.maslick.kodermobile.helper.Helper
 import io.maslick.kodermobile.model.Item
+import io.maslick.kodermobile.model.ItemDao
 import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemActivity.Companion.ADD_ITEM_REQUEST_CODE
 import io.maslick.kodermobile.mvp.listItems.ItemsActivity.Companion.AUTHORIZATION_REQUEST_CODE
@@ -20,11 +21,12 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class ItemsPresenter(private val barkoderApi: IBarkoderApi,
-                     private val repo: ItemRepo,
                      private val keycloakApi: IKeycloakRest,
+                     private val dao: ItemDao,
                      private val storage: IOAuth2AccessTokenStorage) : ItemsContract.Presenter {
 
     override lateinit var view: ItemsContract.View
+    private var repo: ItemRepo = ItemRepo(barkoderApi, dao)
 
     var dataFetched = false
 

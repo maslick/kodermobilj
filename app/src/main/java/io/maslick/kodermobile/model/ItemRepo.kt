@@ -58,7 +58,10 @@ class ItemRepo(private val api: IBarkoderApi, private val dao: ItemDao) {
 
     @SuppressLint("CheckResult")
     private fun storeItemsInDb(items: List<Item>) {
-        Observable.fromCallable { dao.insertAll(items) }
+        Observable.fromCallable {
+            dao.deleteAll()
+            dao.insertAll(items)
+        }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
