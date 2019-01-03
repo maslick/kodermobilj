@@ -202,7 +202,7 @@ class ItemsFragment : Fragment(), ItemsContract.View {
     }
 
     override fun logoutError(message: String?) {
-        Toast.makeText(context, "Error while logging out: ${message?: "n/a"}", Toast.LENGTH_LONG).show()
+        view?.showSnackBar("Error while logging out: are you offline?", Snackbar.LENGTH_LONG)
     }
 
     interface ItemListener {
