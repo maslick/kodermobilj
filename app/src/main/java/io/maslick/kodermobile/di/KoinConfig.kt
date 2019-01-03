@@ -39,7 +39,11 @@ val mvp = module {
     factory { ItemsPresenter(get(), get(), get(), get()) as ItemsContract.Presenter }
 
     factory { AddEditItemFragment() }
-    factory { AddEditItemPresenter(getProperty(EDIT_ITEM_ID), get(), get(), getProperty(LOAD_DATA, true)) as AddEditItemContract.Presenter }
+    factory { AddEditItemPresenter(
+        getProperty(EDIT_ITEM_ID),
+        get(), get(), get(),
+        getProperty(LOAD_DATA, true)
+    ) as AddEditItemContract.Presenter }
 
     factory { LoginPresenter(get(), get()) as LoginContract.Presenter }
 }

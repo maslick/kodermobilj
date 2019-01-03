@@ -6,7 +6,6 @@ import io.maslick.kodermobile.R
 import io.maslick.kodermobile.di.Properties.EDIT_ITEM_ID
 import io.maslick.kodermobile.helper.replaceFragmentInActivity
 import io.maslick.kodermobile.helper.setupActionBar
-import io.maslick.kodermobile.model.Item
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.android.property
 import org.koin.android.ext.android.setProperty
@@ -14,7 +13,7 @@ import org.koin.android.ext.android.setProperty
 class AddEditItemActivity : AppCompatActivity() {
 
     private val addEditItemFragment: AddEditItemFragment by inject()
-    private val selectedItem by property(EDIT_ITEM_ID, Item())
+    private val selectedItem by property(EDIT_ITEM_ID, "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +24,7 @@ class AddEditItemActivity : AppCompatActivity() {
         setupActionBar(R.id.toolbar) {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            title = if (selectedItem.id == null) "Add new Item" else "Edit Item"
+            title = if (selectedItem.isEmpty()) "Add new Item" else "Edit Item"
         }
 
         supportFragmentManager.findFragmentById(R.id.addEditItemContentFrame) as AddEditItemFragment? ?: addEditItemFragment.also {

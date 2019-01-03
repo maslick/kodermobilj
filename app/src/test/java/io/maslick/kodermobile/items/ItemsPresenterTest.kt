@@ -97,9 +97,9 @@ class ItemsPresenterTest {
 
     @Test
     fun clickOnItemDetail() {
-        val testItem = Item()
+        val testItem = Item(1)
         itemsPresenter.openItemDetail(testItem)
-        verify(itemsView).showItemDetailUi(testItem)
+        verify(itemsView).showItemDetailUi(testItem.id!!)
     }
 
     @Test
@@ -164,7 +164,7 @@ class ItemsPresenterTest {
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
-        verify(itemsView).showLoadingItemsError(": are you offline?")
+        verify(itemsView).showLoadingItemsError("Error while loading items: are you offline?")
 
         val captor = argumentCaptor<List<Item>>()
         verify(itemsView).showItems(capture(captor))
@@ -180,7 +180,7 @@ class ItemsPresenterTest {
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
-        verify(itemsView).showLoadingItemsError(": timeout, try again later")
+        verify(itemsView).showLoadingItemsError("Error while loading items: timeout, try again later")
     }
 
     @Test
@@ -189,7 +189,7 @@ class ItemsPresenterTest {
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.error(401, ResponseBody.create(null, ""))))
 
         itemsPresenter.loadItems()
-        verify(itemsView).showLoadingItemsError(": are you logged in?")
+        verify(itemsView).showLoadingItemsError("Error while loading items: are you logged in?")
         verify(itemsView, never()).showItems(anyList())
     }
 
@@ -199,7 +199,7 @@ class ItemsPresenterTest {
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.error(403, ResponseBody.create(null, ""))))
 
         itemsPresenter.loadItems()
-        verify(itemsView).showLoadingItemsError(": access forbidden")
+        verify(itemsView).showLoadingItemsError("Error while loading items: access forbidden")
         verify(itemsView, never()).showItems(anyList())
     }
 
@@ -209,7 +209,7 @@ class ItemsPresenterTest {
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.error(503, ResponseBody.create(null, ""))))
 
         itemsPresenter.loadItems()
-        verify(itemsView).showLoadingItemsError(": service unavailable")
+        verify(itemsView).showLoadingItemsError("Error while loading items: service unavailable")
         verify(itemsView, atLeastOnce()).showItems(anyList())
     }
 }

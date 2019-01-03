@@ -11,7 +11,7 @@ interface AddEditItemContract {
         fun showBarcodeValidationError()
         fun showTitleValidationError()
         fun showSaveItemError()
-        fun showHttpError(message: String?)
+        fun showHttpError(message: String)
         fun initiateCodeScan()
         fun showScanCancelled()
         fun showBarcode(code: String)

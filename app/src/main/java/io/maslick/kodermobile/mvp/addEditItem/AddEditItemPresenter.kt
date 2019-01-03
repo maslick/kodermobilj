@@ -1,7 +1,10 @@
 package io.maslick.kodermobile.mvp.addEditItem
 
+import android.annotation.SuppressLint
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.model.Item
+import io.maslick.kodermobile.model.ItemDao
+import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.Resp
@@ -13,14 +16,30 @@ import org.koin.standalone.setProperty
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-class AddEditItemPresenter(private val selectedItem: Item,
+class AddEditItemPresenter(private val selectedItem: String,
                            private val barkoderApi: IBarkoderApi,
+                           private val dao: ItemDao,
                            private val storage: IOAuth2AccessTokenStorage,
                            override var loadData: Boolean) : AddEditItemContract.Presenter, KoinComponent {
-    override lateinit var view: AddEditItemContract.View
 
+    override lateinit var view: AddEditItemContract.View
+    private var repo: ItemRepo = ItemRepo(barkoderApi, dao)
+
+    @SuppressLint("CheckResult")
     override fun start() {
-        if (loadData && selectedItem.id != null) view.populateItem(selectedItem)
+        if (loadData && selectedItem.isNotEmpty()) {
+            dao.getItemById(selectedItem.toInt())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ item ->
+                    item?.let {
+                        view.populateItem(it)
+                    } ?: view.showItems()
+                }, {
+                    it.printStackTrace()
+                    view.showItems()
+                })
+        }
     }
 
     override fun saveItem(item: Item) {
@@ -28,24 +47,25 @@ class AddEditItemPresenter(private val selectedItem: Item,
         else if (item.barcode.isNullOrBlank()) view.showBarcodeValidationError()
         else {
             view.startLoadingIndicator()
-            if (selectedItem.id == null)
+            if (selectedItem.isEmpty())
                 barkoderApi.postItem(item, header())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext {
                         when(it.code()) {
-                            401 -> view.showHttpError(": are you logged in?")
-                            403 -> view.showHttpError(": access forbidden")
-                            503 -> view.showHttpError(": service unavailable")
+                            401 -> view.showHttpError("Error while saving item: are you logged in?")
+                            403 -> view.showHttpError("Error while saving item: access forbidden")
+                            503 -> view.showHttpError("Error while saving item: service unavailable")
                         }
                     }
                     .materialize()
                     .map {
                         it.error?.let { t ->
                             when {
-                                UnknownHostException::class.isInstance(t) -> view.showHttpError(": are you offline?")
-                                SocketTimeoutException::class.isInstance(t) -> view.showHttpError(": timeout, try again later")
+                                UnknownHostException::class.isInstance(t) -> view.showHttpError("Error while saving item: are you offline?")
+                                SocketTimeoutException::class.isInstance(t) -> view.showHttpError("Error while saving item: timeout, try again later")
                             }
+                            view.stopLoadingIndicator()
                         }
                         it
                     }
@@ -62,24 +82,25 @@ class AddEditItemPresenter(private val selectedItem: Item,
                         view.showSaveItemError()
                     })
             else {
-                item.id = selectedItem.id
+                item.id = selectedItem.toInt()
                 barkoderApi.editItem(item, header())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext {
                         when(it.code()) {
-                            401 -> view.showHttpError(": are you logged in?")
-                            403 -> view.showHttpError(": access forbidden")
-                            503 -> view.showHttpError(": service unavailable")
+                            401 -> view.showHttpError("Error while saving item: are you logged in?")
+                            403 -> view.showHttpError("Error while saving item: access forbidden")
+                            503 -> view.showHttpError("Error while saving item: service unavailable")
                         }
                     }
                     .materialize()
                     .map {
                         it.error?.let { t ->
                             when {
-                                UnknownHostException::class.isInstance(t) -> view.showHttpError(": are you offline?")
-                                SocketTimeoutException::class.isInstance(t) -> view.showHttpError(": timeout, try again later")
+                                UnknownHostException::class.isInstance(t) -> view.showHttpError("Error while saving item: are you offline?")
+                                SocketTimeoutException::class.isInstance(t) -> view.showHttpError("Error while saving item: timeout, try again later")
                             }
+                            view.stopLoadingIndicator()
                         }
                         it
                     }

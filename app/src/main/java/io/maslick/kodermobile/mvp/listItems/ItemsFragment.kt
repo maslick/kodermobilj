@@ -107,14 +107,14 @@ class ItemsFragment : Fragment(), ItemsContract.View {
     }
 
     override fun showLoadingItemsError(message: String) {
-        view?.showSnackBar("Error while loading items$message", Snackbar.LENGTH_LONG)
+        view?.showSnackBar(message, Snackbar.LENGTH_LONG)
     }
 
     override fun showNoItems() {
         view?.showSnackBar("No items...", Snackbar.LENGTH_LONG)
     }
 
-    class LineAdapter(val callbacks: ItemListener) : RecyclerView.Adapter<LineHolder>() {
+    class LineAdapter(private val callbacks: ItemListener) : RecyclerView.Adapter<LineHolder>() {
         var items = listOf<Item>()
             set(items) {
                 field = items
@@ -167,13 +167,13 @@ class ItemsFragment : Fragment(), ItemsContract.View {
 
     override fun showAddItem() {
         val intent = Intent(context, AddEditItemActivity::class.java)
-        setProperty(EDIT_ITEM_ID, Item())
+        setProperty(EDIT_ITEM_ID, "")
         startActivityForResult(intent, ADD_ITEM_REQUEST_CODE)
     }
 
-    override fun showItemDetailUi(item: Item) {
+    override fun showItemDetailUi(itemId: Int) {
         val intent = Intent(context, AddEditItemActivity::class.java)
-        setProperty(EDIT_ITEM_ID, item)
+        setProperty(EDIT_ITEM_ID, itemId.toString())
         startActivityForResult(intent, ADD_ITEM_REQUEST_CODE)
     }
 
