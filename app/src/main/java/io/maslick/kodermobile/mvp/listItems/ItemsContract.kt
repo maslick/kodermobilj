@@ -12,6 +12,7 @@ interface ItemsContract {
         fun showAddItem()
         fun showSuccessfullySavedItem()
         fun showLoadingItemsError(message: String = "")
+        fun showError(message: String = "")
         fun showNoItems()
         fun showDeleteOk(message: String)
         fun showErrorDeletingItem()

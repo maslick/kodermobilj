@@ -1,8 +1,8 @@
 package io.maslick.kodermobile.mvp.addEditItem
 
+import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.mvp.BasePresenter
 import io.maslick.kodermobile.mvp.BaseView
-import io.maslick.kodermobile.model.Item
 
 interface AddEditItemContract {
     interface View : BaseView<Presenter> {
@@ -11,6 +11,7 @@ interface AddEditItemContract {
         fun showBarcodeValidationError()
         fun showTitleValidationError()
         fun showSaveItemError()
+        fun showHttpError(message: String?)
         fun initiateCodeScan()
         fun showScanCancelled()
         fun showBarcode(code: String)

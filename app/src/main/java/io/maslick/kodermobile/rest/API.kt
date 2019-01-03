@@ -16,20 +16,20 @@ interface IBarkoderApi {
     fun getItemWithBarcode(@Path("barcode") barcode: String, @Header("Authorization") header: String = ""): Observable<Item>
 
     @POST("item")
-    fun postItem(@Body item: Item, @Header("Authorization") header: String = ""): Observable<Resp>
+    fun postItem(@Body item: Item, @Header("Authorization") header: String = ""): Observable<Response<Resp>>
 
     @POST("items")
     fun postItems(@Body items: List<Item>, @Header("Authorization") header: String = ""): Observable<Resp>
 
     @PUT("item")
-    fun editItem(@Body item: Item, @Header("Authorization") header: String = ""): Observable<Resp>
+    fun editItem(@Body item: Item, @Header("Authorization") header: String = ""): Observable<Response<Resp>>
 
     @DELETE("item/{id}")
-    fun deleteItemWithId(@Path("id") id: Int, @Header("Authorization") header: String = ""): Observable<Resp>
+    fun deleteItemWithId(@Path("id") id: Int, @Header("Authorization") header: String = ""): Observable<Response<Resp>>
 
     @DELETE("barcode/{barcode}")
     fun deleteItemWithBarcode(@Path("barcode") barcode: String, @Header("Authorization") header: String = ""): Observable<Resp>
 }
 
-enum class Status { ERROR, OK }
+enum class Status { ERROR, NETWORK_ERROR, OK }
 data class Resp(val status: Status, val errorMessage: String? = null)

@@ -10,7 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class LoginPresenter(val api: IKeycloakRest, val storage: IOAuth2AccessTokenStorage) : LoginContract.Presenter {
+class LoginPresenter(private val api: IKeycloakRest, private val storage: IOAuth2AccessTokenStorage) : LoginContract.Presenter {
     override lateinit var view: LoginContract.View
     override fun start() {}
 

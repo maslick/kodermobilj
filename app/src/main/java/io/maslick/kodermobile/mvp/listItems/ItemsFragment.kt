@@ -196,6 +196,10 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         view?.showSnackBar("Could not delete item", Snackbar.LENGTH_LONG)
     }
 
+    override fun showError(message: String) {
+        view?.showSnackBar(message, Snackbar.LENGTH_LONG)
+    }
+
     override fun logoutOk() {
         Toast.makeText(context, "Successfully logged out", Toast.LENGTH_LONG).show()
         startActivityForResult(Intent(activity, LoginActivity::class.java), AUTHORIZATION_REQUEST_CODE)

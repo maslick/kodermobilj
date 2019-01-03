@@ -12,13 +12,14 @@ import io.maslick.kodermobile.rest.Resp
 import io.maslick.kodermobile.rest.Status.ERROR
 import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
+import okhttp3.ResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.anyString
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnit
+import retrofit2.Response
 
 class AddItemPresenterTest {
 
@@ -44,7 +45,7 @@ class AddItemPresenterTest {
     fun addNewItemOk() {
         addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Resp(OK, null)))
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response.success(Resp(OK, null))))
 
         addItemPresenter.saveItem(items[0])
         verify(barkoderApi).postItem(any(), anyString())
@@ -55,7 +56,7 @@ class AddItemPresenterTest {
     fun addNewItemError() {
         addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Resp(ERROR, "This item already exists")))
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response.success(Resp(ERROR, "This item already exists"))))
 
         addItemPresenter.saveItem(items[1])
         verify(barkoderApi).postItem(any(), anyString())
@@ -63,10 +64,37 @@ class AddItemPresenterTest {
     }
 
     @Test
+    fun addNewItemNetworkError() {
+        addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
+        addItemPresenter.view = addItemView
+
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response.error(401, ResponseBody.create(null, ""))))
+        addItemPresenter.saveItem(items[1])
+        verify(barkoderApi, atLeastOnce()).postItem(any(), anyString())
+        verify(addItemView).showHttpError(": are you logged in?")
+        verify(addItemView, never()).showSaveItemError()
+        verify(addItemView, never()).showItems()
+
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response.error(403, ResponseBody.create(null, ""))))
+        addItemPresenter.saveItem(items[1])
+        verify(barkoderApi, atLeastOnce()).postItem(any(), anyString())
+        verify(addItemView).showHttpError(": access forbidden")
+        verify(addItemView, never()).showSaveItemError()
+        verify(addItemView, never()).showItems()
+
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response.error(503, ResponseBody.create(null, ""))))
+        addItemPresenter.saveItem(items[1])
+        verify(barkoderApi, atLeastOnce()).postItem(any(), anyString())
+        verify(addItemView).showHttpError(": service unavailable")
+        verify(addItemView, never()).showSaveItemError()
+        verify(addItemView, never()).showItems()
+    }
+
+    @Test
     fun showExistingItemAndEditIt() {
         addItemPresenter = AddEditItemPresenter(items[2], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Resp(OK, null)))
+        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response.success(Resp(OK, null))))
 
         addItemPresenter.start()
         verify(addItemView).populateItem(items[2])
@@ -81,7 +109,7 @@ class AddItemPresenterTest {
         addItemPresenter = AddEditItemPresenter(items[0], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
         kogda(barkoderApi.editItem(any(), anyString()))
-            .thenReturn(Observable.just(Resp(ERROR, "Item with this barcode already exists!")))
+            .thenReturn(Observable.just(Response.success(Resp(ERROR, "Item with this barcode already exists!"))))
 
         addItemPresenter.start()
         verify(addItemView).populateItem(items[0])
@@ -89,6 +117,33 @@ class AddItemPresenterTest {
         addItemPresenter.saveItem(items[0])
         verify(barkoderApi).editItem(any(), anyString())
         verify(addItemView).showSaveItemError()
+    }
+
+    @Test
+    fun editItemNetworkError() {
+        addItemPresenter = AddEditItemPresenter(items[0], barkoderApi, storage, true)
+        addItemPresenter.view = addItemView
+
+        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response.error(401, ResponseBody.create(null, ""))))
+        addItemPresenter.saveItem(items[1])
+        verify(barkoderApi, atLeastOnce()).editItem(any(), anyString())
+        verify(addItemView).showHttpError(": are you logged in?")
+        verify(addItemView, never()).showSaveItemError()
+        verify(addItemView, never()).showItems()
+
+        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response.error(403, ResponseBody.create(null, ""))))
+        addItemPresenter.saveItem(items[1])
+        verify(barkoderApi, atLeastOnce()).editItem(any(), anyString())
+        verify(addItemView).showHttpError(": access forbidden")
+        verify(addItemView, never()).showSaveItemError()
+        verify(addItemView, never()).showItems()
+
+        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response.error(503, ResponseBody.create(null, ""))))
+        addItemPresenter.saveItem(items[1])
+        verify(barkoderApi, atLeastOnce()).editItem(any(), anyString())
+        verify(addItemView).showHttpError(": service unavailable")
+        verify(addItemView, never()).showSaveItemError()
+        verify(addItemView, never()).showItems()
     }
 
     @Test
