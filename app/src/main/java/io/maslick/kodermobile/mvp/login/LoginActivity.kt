@@ -19,7 +19,7 @@ import org.koin.android.ext.android.inject
 class LoginActivity : RxAppCompatActivity(), LoginContract.View {
 
     override val presenter by inject<LoginContract.Presenter>()
-    var restartMenuBtn: MenuItem? = null
+    private var restartMenuBtn: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

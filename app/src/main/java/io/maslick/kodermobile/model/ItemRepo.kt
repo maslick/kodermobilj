@@ -10,7 +10,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
-class ItemRepo(val api: IBarkoderApi, val dao: ItemDao) {
+class ItemRepo(private val api: IBarkoderApi, private val dao: ItemDao) {
 
     fun getAllItems(header: String, view: ItemsContract.View): Observable<List<Item>> {
         return Observable.concatArrayEager(

@@ -12,9 +12,12 @@ import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.oauth.parseJwtToken
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.IKeycloakRest
+import io.maslick.kodermobile.rest.Resp
 import io.maslick.kodermobile.rest.Status
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class ItemsPresenter(private val barkoderApi: IBarkoderApi,
                      private val repo: ItemRepo,
@@ -77,11 +80,31 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
         barkoderApi.deleteItemWithId(item.id!!, header())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext {
+                when(it.code()) {
+                    401 -> view.showError("Error removing item: are you logged in?")
+                    403 -> view.showError("Error removing item: access forbidden")
+                    503 -> view.showError("Error removing item: service unavailable")
+                }
+            }
+            .materialize()
+            .map {
+                it.error?.let { t ->
+                    when {
+                        UnknownHostException::class.isInstance(t) -> view.showError("Error removing item: are you offline?")
+                        SocketTimeoutException::class.isInstance(t) -> view.showError("Error removing item: timeout, try again later")
+                    }
+                }
+                it
+            }
+            .filter { !it.isOnError }
+            .dematerialize { it }
+            .map { it.body() ?: Resp(Status.NETWORK_ERROR, "connection issue :(") }
             .subscribe({
                 if (it.status == Status.OK) {
                     view.showDeleteOk("Item ${item.id} deleted")
                     loadItems()
-                } else view.showErrorDeletingItem()
+                }
             }, { view.showErrorDeletingItem() } )
     }
 

@@ -106,7 +106,7 @@ class ItemsPresenterTest {
     @Test
     fun clickDeleteItem() {
         kogda(barkoderApi.deleteItemWithId(anyInt(), anyString()))
-            .thenReturn(Observable.just(Resp(OK, null)))
+            .thenReturn(Observable.just(Response.success(Resp(OK, null))))
 
         itemsPresenter.removeItem(items[0])
         verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
@@ -116,11 +116,44 @@ class ItemsPresenterTest {
     @Test
     fun clickDeleteItemError() {
         kogda(barkoderApi.deleteItemWithId(anyInt(), anyString()))
-            .thenReturn(Observable.just(Resp(ERROR, "Error deleting item!")))
+            .thenReturn(Observable.just(Response.success(Resp(ERROR, "Error deleting item!"))))
 
         itemsPresenter.removeItem(items[1])
         verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
-        verify(itemsView).showErrorDeletingItem()
+        verify(itemsView, never()).showDeleteOk(anyString())
+    }
+
+    @Test
+    fun clickDeleteItemNetworkError() {
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString())).thenReturn(Observable.just(Response.error(401, ResponseBody.create(null, ""))))
+        itemsPresenter.removeItem(items[1])
+        verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
+        verify(itemsView).showError("Error removing item: are you logged in?")
+        verify(itemsView, never()).showDeleteOk(anyString())
+
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString())).thenReturn(Observable.just(Response.error(403, ResponseBody.create(null, ""))))
+        itemsPresenter.removeItem(items[1])
+        verify(barkoderApi, atLeastOnce()).deleteItemWithId(anyInt(), anyString())
+        verify(itemsView).showError("Error removing item: access forbidden")
+        verify(itemsView, never()).showDeleteOk(anyString())
+
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString())).thenReturn(Observable.just(Response.error(503, ResponseBody.create(null, ""))))
+        itemsPresenter.removeItem(items[1])
+        verify(barkoderApi, atLeastOnce()).deleteItemWithId(anyInt(), anyString())
+        verify(itemsView).showError("Error removing item: service unavailable")
+        verify(itemsView, never()).showDeleteOk(anyString())
+
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString())).thenReturn(Observable.error(UnknownHostException()))
+        itemsPresenter.removeItem(items[1])
+        verify(barkoderApi, atLeastOnce()).deleteItemWithId(anyInt(), anyString())
+        verify(itemsView).showError("Error removing item: are you offline?")
+        verify(itemsView, never()).showDeleteOk(anyString())
+
+        kogda(barkoderApi.deleteItemWithId(anyInt(), anyString())).thenReturn(Observable.error(SocketTimeoutException()))
+        itemsPresenter.removeItem(items[1])
+        verify(barkoderApi, atLeastOnce()).deleteItemWithId(anyInt(), anyString())
+        verify(itemsView).showError("Error removing item: timeout, try again later")
+        verify(itemsView, never()).showDeleteOk(anyString())
     }
 
     @Test
