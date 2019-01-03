@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
@@ -16,6 +18,7 @@ import org.koin.android.ext.android.inject
 class LoginActivity : RxAppCompatActivity(), LoginContract.View {
 
     override val presenter by inject<LoginContract.Presenter>()
+    var restartMenuBtn: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,21 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.login_act_menu, menu)
+        restartMenuBtn = menu?.findItem(R.id.restartLogin)
+        restartMenuBtn?.isVisible = false
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item!!.itemId) { R.id.restartLogin -> {
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+        }}
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         presenter.authenticate(intent?.data?.toString())
@@ -56,6 +74,7 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
         Handler().postDelayed({
             login_text.visibility = View.VISIBLE
             login_button.visibility = View.GONE
+            restartMenuBtn?.isVisible = true
         }, 1000L)
     }
 
