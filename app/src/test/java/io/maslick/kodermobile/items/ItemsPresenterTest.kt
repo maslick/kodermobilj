@@ -6,17 +6,19 @@ import io.maslick.kodermobile.helpers.capture
 import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.model.ItemDao
+import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.IKeycloakRest
 import io.maslick.kodermobile.rest.KeycloakToken
-import io.maslick.kodermobile.rest.Response
+import io.maslick.kodermobile.rest.Resp
 import io.maslick.kodermobile.rest.Status.ERROR
 import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.ResponseBody
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -24,9 +26,11 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnit
+import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
+import io.maslick.kodermobile.helpers.any as myAny
 
 class ItemsPresenterTest {
 
@@ -34,8 +38,8 @@ class ItemsPresenterTest {
     @Rule @JvmField val testSchedulerRule = RxImmediateSchedulerRule()
 
     @Mock private lateinit var barkoderApi: IBarkoderApi
-    @Mock private lateinit var itemDao: ItemDao
     @Mock private lateinit var itemsView: ItemsContract.View
+    @Mock private lateinit var itemDao: ItemDao
     @Mock private lateinit var keycloakApi: IKeycloakRest
     @Mock private lateinit var storage: IOAuth2AccessTokenStorage
     private lateinit var itemsPresenter: ItemsPresenter
@@ -43,7 +47,7 @@ class ItemsPresenterTest {
 
     @Before
     fun beforeItemsPresenter() {
-        itemsPresenter = ItemsPresenter(barkoderApi, itemDao, keycloakApi, storage)
+        itemsPresenter = ItemsPresenter(barkoderApi, ItemRepo(barkoderApi, itemDao), keycloakApi, storage)
         itemsPresenter.view = itemsView
 
         items = mutableListOf(
@@ -55,16 +59,16 @@ class ItemsPresenterTest {
 
     @Test
     fun loadAllItemsIntoView() {
-        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.success(items.toList())))
         kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
         itemsPresenter.loadItems()
         val inOrder = inOrder(itemsView)
-        inOrder.verify(itemsView).setLoadingIndicator(true)
-        inOrder.verify(itemsView).setLoadingIndicator(false)
+        inOrder.verify(itemsView, atLeastOnce()).setLoadingIndicator(true)
+        inOrder.verify(itemsView, atLeastOnce()).setLoadingIndicator(false)
 
         val captor = argumentCaptor<List<Item>>()
         verify(itemsView).showItems(capture(captor))
-        verify(barkoderApi).getAllItems(anyString())
+        verify(itemDao).getItems()
         Assert.assertEquals(3, captor.value.size)
     }
 
@@ -80,8 +84,8 @@ class ItemsPresenterTest {
         val expiryDate = GregorianCalendar(2099, 1, 1)
         val token = KeycloakToken(tokenExpirationDate = expiryDate, refreshTokenExpirationDate = expiryDate)
         kogda(storage.getStoredAccessToken()).thenReturn(token)
-        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(items))
-        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.success(emptyList())))
+        kogda(itemDao.getItems()).thenReturn(Single.just(items.toList()))
         itemsPresenter.start()
         verify(itemsView).showItems(anyList())
     }
@@ -102,7 +106,7 @@ class ItemsPresenterTest {
     @Test
     fun clickDeleteItem() {
         kogda(barkoderApi.deleteItemWithId(anyInt(), anyString()))
-            .thenReturn(Observable.just(Response(OK, null)))
+            .thenReturn(Observable.just(Resp(OK, null)))
 
         itemsPresenter.removeItem(items[0])
         verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
@@ -112,7 +116,7 @@ class ItemsPresenterTest {
     @Test
     fun clickDeleteItemError() {
         kogda(barkoderApi.deleteItemWithId(anyInt(), anyString()))
-            .thenReturn(Observable.just(Response(ERROR, "Error deleting item!")))
+            .thenReturn(Observable.just(Resp(ERROR, "Error deleting item!")))
 
         itemsPresenter.removeItem(items[1])
         verify(barkoderApi).deleteItemWithId(anyInt(), anyString())
@@ -122,24 +126,58 @@ class ItemsPresenterTest {
     @Test
     fun noNetwork() {
         val inOrder = inOrder(itemsView)
+        kogda(itemDao.getItems()).thenReturn(Single.just((items + Item()).toList()))
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.error(UnknownHostException()))
-        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
 
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
-        verify(itemsView).showLoadingItemsError(anyString())
+        verify(itemsView).showLoadingItemsError(": are you offline?")
+
+        val captor = argumentCaptor<List<Item>>()
+        verify(itemsView).showItems(capture(captor))
+        Assert.assertEquals(4, captor.value.size)
     }
 
     @Test
     fun backendUnreachable() {
         val inOrder = inOrder(itemsView)
+        kogda(itemDao.getItems()).thenReturn(Single.just((items).toList()))
         kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.error(SocketTimeoutException()))
-        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
 
         itemsPresenter.loadItems()
         inOrder.verify(itemsView).setLoadingIndicator(true)
         inOrder.verify(itemsView).setLoadingIndicator(false)
-        verify(itemsView).showLoadingItemsError(anyString())
+        verify(itemsView).showLoadingItemsError(": timeout, try again later")
+    }
+
+    @Test
+    fun error401() {
+        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.error(401, ResponseBody.create(null, ""))))
+
+        itemsPresenter.loadItems()
+        verify(itemsView).showLoadingItemsError(": are you logged in?")
+        verify(itemsView, never()).showItems(anyList())
+    }
+
+    @Test
+    fun error403() {
+        kogda(itemDao.getItems()).thenReturn(Single.just(emptyList()))
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.error(403, ResponseBody.create(null, ""))))
+
+        itemsPresenter.loadItems()
+        verify(itemsView).showLoadingItemsError(": access forbidden")
+        verify(itemsView, never()).showItems(anyList())
+    }
+
+    @Test
+    fun error503() {
+        kogda(itemDao.getItems()).thenReturn(Single.just(listOf(items[0])))
+        kogda(barkoderApi.getAllItems(anyString())).thenReturn(Observable.just(Response.error(503, ResponseBody.create(null, ""))))
+
+        itemsPresenter.loadItems()
+        verify(itemsView).showLoadingItemsError(": service unavailable")
+        verify(itemsView, atLeastOnce()).showItems(anyList())
     }
 }

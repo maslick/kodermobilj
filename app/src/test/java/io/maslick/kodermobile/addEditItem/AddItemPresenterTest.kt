@@ -8,7 +8,7 @@ import io.maslick.kodermobile.mvp.addEditItem.AddEditItemContract
 import io.maslick.kodermobile.mvp.addEditItem.AddEditItemPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
-import io.maslick.kodermobile.rest.Response
+import io.maslick.kodermobile.rest.Resp
 import io.maslick.kodermobile.rest.Status.ERROR
 import io.maslick.kodermobile.rest.Status.OK
 import io.reactivex.Observable
@@ -44,7 +44,7 @@ class AddItemPresenterTest {
     fun addNewItemOk() {
         addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response(OK, null)))
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Resp(OK, null)))
 
         addItemPresenter.saveItem(items[0])
         verify(barkoderApi).postItem(any(), anyString())
@@ -55,7 +55,7 @@ class AddItemPresenterTest {
     fun addNewItemError() {
         addItemPresenter = AddEditItemPresenter(Item(), barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Response(ERROR, "This item already exists")))
+        kogda(barkoderApi.postItem(any(), anyString())).thenReturn(Observable.just(Resp(ERROR, "This item already exists")))
 
         addItemPresenter.saveItem(items[1])
         verify(barkoderApi).postItem(any(), anyString())
@@ -66,7 +66,7 @@ class AddItemPresenterTest {
     fun showExistingItemAndEditIt() {
         addItemPresenter = AddEditItemPresenter(items[2], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
-        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response(OK, null)))
+        kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Resp(OK, null)))
 
         addItemPresenter.start()
         verify(addItemView).populateItem(items[2])
@@ -81,7 +81,7 @@ class AddItemPresenterTest {
         addItemPresenter = AddEditItemPresenter(items[0], barkoderApi, storage, true)
         addItemPresenter.view = addItemView
         kogda(barkoderApi.editItem(any(), anyString()))
-            .thenReturn(Observable.just(Response(ERROR, "Item with this barcode already exists!")))
+            .thenReturn(Observable.just(Resp(ERROR, "Item with this barcode already exists!")))
 
         addItemPresenter.start()
         verify(addItemView).populateItem(items[0])
