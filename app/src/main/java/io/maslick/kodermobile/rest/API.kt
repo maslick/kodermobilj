@@ -10,7 +10,7 @@ interface IBarkoderApi {
     fun getAllItems(@Header("Authorization") header: String = ""): Observable<Response<List<Item>>>
 
     @GET("item/{id}")
-    fun getItemWithId(@Path("id") id: Int, @Header("Authorization") header: String = ""): Observable<Item>
+    fun getItemWithId(@Path("id") id: Int, @Header("Authorization") header: String = ""): Observable<Response<Item>>
 
     @GET("barcode/{barcode}")
     fun getItemWithBarcode(@Path("barcode") barcode: String, @Header("Authorization") header: String = ""): Observable<Item>

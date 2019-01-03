@@ -124,8 +124,8 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
         view?.showSnackBar("Error while saving item", Snackbar.LENGTH_LONG)
     }
 
-    override fun showHttpError(message: String?) {
-        view?.showSnackBar("Error while saving item${message ?: ""}", Snackbar.LENGTH_LONG)
+    override fun showHttpError(message: String) {
+        view?.showSnackBar(message, Snackbar.LENGTH_LONG)
     }
 
     override fun startLoadingIndicator() {

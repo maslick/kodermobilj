@@ -31,17 +31,17 @@ class ItemRepo(private val api: IBarkoderApi, private val dao: ItemDao) {
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext {
                 when(it.code()) {
-                    401 -> view.showLoadingItemsError(": are you logged in?")
-                    403 -> view.showLoadingItemsError(": access forbidden")
-                    503 -> view.showLoadingItemsError(": service unavailable")
+                    401 -> view.showLoadingItemsError("Error while loading items: are you logged in?")
+                    403 -> view.showLoadingItemsError("Error while loading items: access forbidden")
+                    503 -> view.showLoadingItemsError("Error while loading items: service unavailable")
                 }
             }
             .materialize()
             .map {
                 it.error?.let { t ->
                     when {
-                        UnknownHostException::class.isInstance(t) -> view.showLoadingItemsError(": are you offline?")
-                        SocketTimeoutException::class.isInstance(t) -> view.showLoadingItemsError(": timeout, try again later")
+                        UnknownHostException::class.isInstance(t) -> view.showLoadingItemsError("Error while loading items: are you offline?")
+                        SocketTimeoutException::class.isInstance(t) -> view.showLoadingItemsError("Error while loading items: timeout, try again later")
                     }
                 }
                 it
