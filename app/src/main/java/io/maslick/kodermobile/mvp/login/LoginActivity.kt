@@ -71,6 +71,7 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
     override fun hideAll() {
         login_text.visibility = View.GONE
         login_button.visibility = View.GONE
+        restartMenuBtn?.isVisible = false
     }
 
     override fun hideLoginButton() {
