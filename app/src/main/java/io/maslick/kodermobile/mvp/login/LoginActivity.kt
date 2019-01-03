@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Browser
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -36,7 +37,9 @@ class LoginActivity : RxAppCompatActivity(), LoginContract.View {
 
         login_button.setOnClickListener {
             hideLoginButton()
-            startActivity(Intent(Intent.ACTION_VIEW, presenter.authUrl()))
+            val intent = Intent(Intent.ACTION_VIEW, presenter.authUrl())
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, applicationContext.packageName)
+            startActivity(intent)
         }
     }
 
