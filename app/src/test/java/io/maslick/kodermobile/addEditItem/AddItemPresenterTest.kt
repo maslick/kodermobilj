@@ -113,7 +113,7 @@ class AddItemPresenterTest {
     fun showExistingItemAndEditItError() {
         addItemPresenter = AddEditItemPresenter(items[0].id.toString(), barkoderApi, itemDao, storage, true)
         addItemPresenter.view = addItemView
-        kogda(itemDao.getItemById(anyInt())).thenReturn(Maybe.empty())
+        kogda(itemDao.getItemById(anyInt())).thenReturn(Maybe.just(items[0]))
         kogda(barkoderApi.getItemWithId(anyInt(), anyString())).thenReturn(Observable.just(Response.success(items[0])))
         kogda(barkoderApi.editItem(any(), anyString()))
             .thenReturn(Observable.just(Response.success(Resp(ERROR, "Item with this barcode already exists!"))))

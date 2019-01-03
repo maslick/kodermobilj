@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import io.maslick.kodermobile.di.Properties.LOAD_DATA
 import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.model.ItemDao
-import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
 import io.maslick.kodermobile.rest.IBarkoderApi
 import io.maslick.kodermobile.rest.Resp
@@ -18,17 +17,16 @@ import java.net.UnknownHostException
 
 class AddEditItemPresenter(private val selectedItem: String,
                            private val barkoderApi: IBarkoderApi,
-                           private val dao: ItemDao,
+                           private val room: ItemDao,
                            private val storage: IOAuth2AccessTokenStorage,
                            override var loadData: Boolean) : AddEditItemContract.Presenter, KoinComponent {
 
     override lateinit var view: AddEditItemContract.View
-    private var repo: ItemRepo = ItemRepo(barkoderApi, dao)
 
     @SuppressLint("CheckResult")
     override fun start() {
         if (loadData && selectedItem.isNotEmpty()) {
-            dao.getItemById(selectedItem.toInt())
+            room.getItemById(selectedItem.toInt())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ item ->
