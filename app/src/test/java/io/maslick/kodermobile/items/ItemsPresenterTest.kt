@@ -99,7 +99,7 @@ class ItemsPresenterTest {
     fun clickOnItemDetail() {
         val testItem = Item(1)
         itemsPresenter.openItemDetail(testItem)
-        verify(itemsView).showItemDetailUi(testItem.id!!)
+        verify(itemsView).showItemDetailUi(testItem)
     }
 
     @Test

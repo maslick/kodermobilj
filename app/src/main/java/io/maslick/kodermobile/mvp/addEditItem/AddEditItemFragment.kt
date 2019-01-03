@@ -25,6 +25,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
         presenter.start()
     }
 
+    private var uid: Int? = null
     private lateinit var title: EditText
     private lateinit var category: EditText
     private lateinit var description: EditText
@@ -57,7 +58,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
                 val categoryStr = category.text.toString()
                 val descStr = description.text.toString()
                 val barcodeStr = barcode.text.toString()
-                presenter.saveItem(Item(null, titleStr, categoryStr, descStr, barcodeStr, quantity.value))
+                presenter.saveItem(Item(uid, titleStr, categoryStr, descStr, barcodeStr, quantity.value))
             }
         }
 
@@ -97,6 +98,7 @@ class AddEditItemFragment : Fragment(), AddEditItemContract.View {
     }
 
     override fun populateItem(item: Item) {
+        uid = item.id
         title.setText(item.title)
         barcode.setText(item.barcode)
         quantity.value = item.quantity ?: 0

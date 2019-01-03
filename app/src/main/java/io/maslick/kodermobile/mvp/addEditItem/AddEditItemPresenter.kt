@@ -26,7 +26,7 @@ class AddEditItemPresenter(private val selectedItem: String,
     @SuppressLint("CheckResult")
     override fun start() {
         if (loadData && selectedItem.isNotEmpty()) {
-            room.getItemById(selectedItem.toInt())
+            room.getItemByBarcode(selectedItem)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ item ->
@@ -80,7 +80,6 @@ class AddEditItemPresenter(private val selectedItem: String,
                         view.showSaveItemError()
                     })
             else {
-                item.id = selectedItem.toInt()
                 barkoderApi.editItem(item, header())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
