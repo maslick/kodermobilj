@@ -95,10 +95,9 @@ class AddItemPresenterTest {
 
     @Test
     fun showExistingItemAndEditIt() {
-        addItemPresenter = AddEditItemPresenter(items[2].id.toString(), barkoderApi, itemDao, storage, true)
+        addItemPresenter = AddEditItemPresenter(items[2].barcode!!, barkoderApi, itemDao, storage, true)
         addItemPresenter.view = addItemView
-        kogda(itemDao.getItemById(anyInt())).thenReturn(Maybe.just(items[2]))
-        kogda(barkoderApi.getItemWithId(anyInt(), anyString())).thenReturn(Observable.just(Response.success(items[2])))
+        kogda(itemDao.getItemByBarcode(anyString())).thenReturn(Maybe.just(items[2]))
         kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response.success(Resp(OK, null))))
 
         addItemPresenter.start()
@@ -111,10 +110,9 @@ class AddItemPresenterTest {
 
     @Test
     fun showExistingItemAndEditItError() {
-        addItemPresenter = AddEditItemPresenter(items[0].id.toString(), barkoderApi, itemDao, storage, true)
+        addItemPresenter = AddEditItemPresenter(items[0].barcode!!, barkoderApi, itemDao, storage, true)
         addItemPresenter.view = addItemView
-        kogda(itemDao.getItemById(anyInt())).thenReturn(Maybe.just(items[0]))
-        kogda(barkoderApi.getItemWithId(anyInt(), anyString())).thenReturn(Observable.just(Response.success(items[0])))
+        kogda(itemDao.getItemByBarcode(anyString())).thenReturn(Maybe.just(items[0]))
         kogda(barkoderApi.editItem(any(), anyString()))
             .thenReturn(Observable.just(Response.success(Resp(ERROR, "Item with this barcode already exists!"))))
 
@@ -128,7 +126,7 @@ class AddItemPresenterTest {
 
     @Test
     fun editItemNetworkError() {
-        addItemPresenter = AddEditItemPresenter(items[0].id.toString(), barkoderApi, itemDao, storage, true)
+        addItemPresenter = AddEditItemPresenter(items[0].barcode!!, barkoderApi, itemDao, storage, true)
         addItemPresenter.view = addItemView
 
         kogda(barkoderApi.editItem(any(), anyString())).thenReturn(Observable.just(Response.error(401, ResponseBody.create(null, ""))))
@@ -182,7 +180,7 @@ class AddItemPresenterTest {
 
     @Test
     fun testItemValidationBeforeEdit() {
-        addItemPresenter = AddEditItemPresenter(items[2].id.toString(), barkoderApi, itemDao, storage, true)
+        addItemPresenter = AddEditItemPresenter(items[2].barcode!!, barkoderApi, itemDao, storage, true)
         addItemPresenter.view = addItemView
 
         addItemPresenter.saveItem(Item())

@@ -74,7 +74,7 @@ class ItemsPresenter(private val barkoderApi: IBarkoderApi,
     }
 
     override fun openItemDetail(item: Item) {
-        view.showItemDetailUi(item.id!!)
+        view.showItemDetailUi(item)
     }
 
     @SuppressLint("CheckResult")

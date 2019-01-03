@@ -171,9 +171,9 @@ class ItemsFragment : Fragment(), ItemsContract.View {
         startActivityForResult(intent, ADD_ITEM_REQUEST_CODE)
     }
 
-    override fun showItemDetailUi(itemId: Int) {
+    override fun showItemDetailUi(item: Item) {
         val intent = Intent(context, AddEditItemActivity::class.java)
-        setProperty(EDIT_ITEM_ID, itemId.toString())
+        setProperty(EDIT_ITEM_ID, item.barcode!!)
         startActivityForResult(intent, ADD_ITEM_REQUEST_CODE)
     }
 

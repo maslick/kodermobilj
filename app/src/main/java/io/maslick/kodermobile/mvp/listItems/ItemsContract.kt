@@ -16,7 +16,7 @@ interface ItemsContract {
         fun showNoItems()
         fun showDeleteOk(message: String)
         fun showErrorDeletingItem()
-        fun showItemDetailUi(itemId: Int)
+        fun showItemDetailUi(item: Item)
         fun logoutOk()
         fun logoutError(message: String? = null)
         fun startAuthActivity()
