@@ -28,4 +28,7 @@ interface ItemDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(users: List<Item>)
+
+    @Query("DELETE FROM items")
+    fun deleteAll()
 }

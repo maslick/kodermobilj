@@ -6,7 +6,6 @@ import io.maslick.kodermobile.helpers.capture
 import io.maslick.kodermobile.helpers.kogda
 import io.maslick.kodermobile.model.Item
 import io.maslick.kodermobile.model.ItemDao
-import io.maslick.kodermobile.model.ItemRepo
 import io.maslick.kodermobile.mvp.listItems.ItemsContract
 import io.maslick.kodermobile.mvp.listItems.ItemsPresenter
 import io.maslick.kodermobile.oauth.IOAuth2AccessTokenStorage
@@ -47,7 +46,7 @@ class ItemsPresenterTest {
 
     @Before
     fun beforeItemsPresenter() {
-        itemsPresenter = ItemsPresenter(barkoderApi, ItemRepo(barkoderApi, itemDao), keycloakApi, storage)
+        itemsPresenter = ItemsPresenter(barkoderApi, keycloakApi, itemDao, storage)
         itemsPresenter.view = itemsView
 
         items = mutableListOf(
