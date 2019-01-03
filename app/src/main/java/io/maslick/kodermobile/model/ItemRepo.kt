@@ -49,11 +49,13 @@ class ItemRepo(private val api: IBarkoderApi, private val dao: ItemDao) {
             .filter { !it.isOnError }
             .dematerialize { it }
             .debounce(400, TimeUnit.MILLISECONDS)
-            .map { it.body() ?: emptyList() }
             .doOnNext {
-                println("Dispatching ${it.size} items from API...")
-                storeItemsInDb(it)
+                it.body()?.apply {
+                    println("Dispatching $size items from API...")
+                    storeItemsInDb(this)
+                }
             }
+            .map { it.body() ?: emptyList() }
     }
 
     @SuppressLint("CheckResult")
