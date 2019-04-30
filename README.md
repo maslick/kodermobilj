@@ -18,13 +18,16 @@ Android native client for [barkoder](https://github.com/maslick/barkoder)
 
 
 ## Usage
-Edit the file ``Config.kt`` according to your setup:
+Edit the file ``Config.kt`` according to your setup (``keycloakUrl``, ``realm``, ``clientId``, ``barkoderBaseUrl``):
 ```kt
 object Config {
-    const val barkoderBaseUrl = "[BARKODER_URL]"
-    const val keycloakBaseUrl = "https://[KEYCLOAK_URL]/auth/realms/[REALM]/protocol/openid-connect"
+    const val keycloakUrl = "https://my-keycloak.io"
+    const val realm = "[REALM]"
     const val clientId = "[CLIENT_ID]"
+    const val keycloakBaseUrl = "$keycloakUrl/auth/realms/$realm/protocol/openid-connect"
     const val authenticationCodeUrl = "$keycloakBaseUrl/auth"
+
+    const val barkoderBaseUrl = "[BARKODER_URL]"
     const val redirectUri = "barkoder://oauthresponse"
 }
 ```
